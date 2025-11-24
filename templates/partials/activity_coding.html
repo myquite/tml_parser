@@ -1,0 +1,23 @@
+<div class="activity-slide activity-coding">
+  <div class="card">
+    <h2>💻 Coding Exercise</h2>
+    <div class="activity-info">
+      {{ est_html }}
+    </div>
+    <div class="activity-instructions">
+      <h3>Instructions</h3>
+      <div class="instructions-content">{{ instructions }}</div>
+    </div>
+    {{ expected_html }}
+    <div class="activity-workspace">
+      <h3>Your Code</h3>
+      <textarea class="code-editor" id="code-{{ activity_id }}" placeholder="// Write your code here...&#10;&#10;"></textarea>
+      <div class="activity-actions">
+        <button class="btn" onclick="runCode('{{ activity_id }}')">▶ Run Code</button>
+        <button class="btn" onclick="checkActivity('{{ activity_id }}')">✓ Check Solution</button>
+      </div>
+      <div class="code-output" id="output-{{ activity_id }}"></div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,14 @@
+<div class="assessment-slide" data-assessment="{{ assess_id }}">
+  <div class="card">
+    <h2>📝 Assessment</h2>
+    <div class="quiz-content">
+      {{ questions }}
+    </div>
+    <div class="assessment-actions">
+      <button class="btn" onclick="checkQuiz('{{ course_id }}','{{ assess_id }}')">✓ Check Answers</button>
+      <div class="quiz-result small" style="margin-top:1rem;"></div>
+      <div class="small" style="margin-top:0.5rem;color:var(--text-muted);">Passing score: <strong>{{ pass_score }}%</strong></div>
+    </div>
+  </div>
+</div>
+

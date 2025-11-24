@@ -1,0 +1,20 @@
+<div class="activity-slide activity-reflection">
+  <div class="card">
+    <h2>💭 Reflection</h2>
+    <div class="activity-info">
+      {{ est_html }}
+    </div>
+    <div class="activity-instructions">
+      <h3>Instructions</h3>
+      <div class="instructions-content">{{ instructions }}</div>
+    </div>
+    <div class="activity-workspace">
+      <h3>Your Reflection</h3>
+      <textarea class="reflection-editor" id="reflection-{{ activity_id }}" placeholder="Take a moment to reflect on what you've learned..."></textarea>
+      <div class="activity-actions">
+        <button class="btn" onclick="saveReflection('{{ activity_id }}')">💾 Save Reflection</button>
+      </div>
+    </div>
+  </div>
+</div>
+

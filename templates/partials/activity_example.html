@@ -1,0 +1,25 @@
+<div class="activity-slide activity-example">
+  <div class="card">
+    <h2>💡 Worked Example</h2>
+    <div class="activity-info">
+      {{ est_html }}
+    </div>
+    <div class="activity-instructions">
+      <h3>Instructions</h3>
+      <div class="instructions-content">{{ instructions }}</div>
+    </div>
+    {{ example_explanation }}
+    <div class="activity-workspace">
+      <h3>Try It Yourself</h3>
+      <p class="small" style="margin-bottom:1rem;color:var(--text-muted);">Edit the code below and click "Run Code" to see the output. Experiment with different values!</p>
+      <textarea class="code-editor" id="code-{{ activity_id }}" placeholder="// Edit this code..." data-initial="{{ initial_code }}">{{ initial_code }}</textarea>
+      <div class="activity-actions">
+        <button class="btn" onclick="runExampleCode('{{ activity_id }}')">▶ Run Code</button>
+        <button class="btn" onclick="resetExampleCode('{{ activity_id }}')">↻ Reset</button>
+      </div>
+      <div class="code-output" id="output-{{ activity_id }}"></div>
+    </div>
+    {{ key_takeaways }}
+  </div>
+</div>
+

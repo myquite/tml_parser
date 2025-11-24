@@ -1,0 +1,22 @@
+<div class="activity-slide activity-lab">
+  <div class="card">
+    <h2>🔬 Lab</h2>
+    <div class="activity-info">
+      {{ est_html }}
+    </div>
+    <div class="activity-instructions">
+      <h3>Lab Instructions</h3>
+      <div class="instructions-content">{{ instructions }}</div>
+    </div>
+    {{ expected_html }}
+    <div class="activity-workspace">
+      <h3>Lab Notes & Observations</h3>
+      <textarea class="code-editor" id="lab-{{ activity_id }}" placeholder="// Record your lab observations, code, and results here...&#10;&#10;"></textarea>
+      <div class="activity-actions">
+        <button class="btn" onclick="saveLab('{{ activity_id }}')">💾 Save Lab Notes</button>
+        <button class="btn" onclick="markLabComplete('{{ activity_id }}')">✓ Mark Lab Complete</button>
+      </div>
+    </div>
+  </div>
+</div>
+

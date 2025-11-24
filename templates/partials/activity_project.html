@@ -1,0 +1,22 @@
+<div class="activity-slide activity-project">
+  <div class="card">
+    <h2>🚀 Project</h2>
+    <div class="activity-info">
+      {{ est_html }}
+    </div>
+    <div class="activity-instructions">
+      <h3>Project Instructions</h3>
+      <div class="instructions-content">{{ instructions }}</div>
+    </div>
+    {{ expected_html }}
+    <div class="activity-workspace">
+      <h3>Project Workspace</h3>
+      <textarea class="code-editor" id="project-{{ activity_id }}" placeholder="// Document your project progress, code, or notes here...&#10;&#10;"></textarea>
+      <div class="activity-actions">
+        <button class="btn" onclick="saveProject('{{ activity_id }}')">💾 Save Progress</button>
+        <button class="btn" onclick="markProjectComplete('{{ activity_id }}')">✓ Mark Project Complete</button>
+      </div>
+    </div>
+  </div>
+</div>
+

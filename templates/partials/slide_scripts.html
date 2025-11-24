@@ -1,0 +1,187 @@
+<script>
+// Slide navigation
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+
+function showSlide(n) {
+  if (n < 0) n = 0;
+  if (n >= slides.length) n = slides.length - 1;
+  
+  // Hide all slides first
+  slides.forEach((slide, index) => {
+    slide.style.display = 'none';
+  });
+  
+  // Scroll to top instantly (before showing new slide)
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  
+  // Show the new slide
+  slides[n].style.display = 'block';
+  
+  currentSlide = n;
+  updateNavigation();
+  updateSlideCounter();
+}
+
+function nextSlide() {
+  if (currentSlide < slides.length - 1) {
+    showSlide(currentSlide + 1);
+  }
+}
+
+function previousSlide() {
+  if (currentSlide > 0) {
+    showSlide(currentSlide - 1);
+  }
+}
+
+function updateNavigation() {
+  // Update navigation buttons in the current slide
+  const currentSlideEl = slides[currentSlide];
+  if (currentSlideEl) {
+    const prevBtn = currentSlideEl.querySelector('#prev-btn');
+    const nextBtn = currentSlideEl.querySelector('#next-btn');
+    
+    if (prevBtn) prevBtn.style.display = currentSlide === 0 ? 'none' : 'inline-block';
+    if (nextBtn) nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'inline-block';
+  }
+}
+
+function updateSlideCounter() {
+  const counters = document.querySelectorAll('.slide-counter');
+  counters.forEach(counter => {
+    counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+  });
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') previousSlide();
+  if (e.key === 'ArrowRight') nextSlide();
+});
+
+// Initialize slides on page load
+document.addEventListener('DOMContentLoaded', () => {
+  if (slides.length > 0) {
+    showSlide(0);
+  }
+});
+
+// Activity functions
+function runCode(activityId) {
+  const code = document.getElementById(`code-${activityId}`).value;
+  const output = document.getElementById(`output-${activityId}`);
+  // Simple code execution demo (in real app, this would use a code execution service)
+  output.textContent = 'Code execution not implemented in demo. This would run your code.';
+  output.style.display = 'block';
+}
+
+// Interactive example code execution
+function runExampleCode(activityId) {
+  const code = document.getElementById(`code-${activityId}`).value;
+  const output = document.getElementById(`output-${activityId}`);
+  
+  // Capture console.log output
+  const logs = [];
+  const originalLog = console.log;
+  console.log = function(...args) {
+    logs.push(args.map(arg => {
+      if (typeof arg === 'object') {
+        try {
+          return JSON.stringify(arg, null, 2);
+        } catch {
+          return String(arg);
+        }
+      }
+      return String(arg);
+    }).join(' '));
+    originalLog.apply(console, args);
+  };
+  
+  try {
+    // Execute the code
+    const result = new Function(code)();
+    
+    // Restore console.log
+    console.log = originalLog;
+    
+    // Display output
+    let outputText = '';
+    if (logs.length > 0) {
+      outputText = logs.join('\n');
+    }
+    if (result !== undefined) {
+      if (outputText) outputText += '\n';
+      outputText += String(result);
+    }
+    
+    if (outputText) {
+      output.innerHTML = '<div style="color:var(--text-primary);white-space:pre-wrap;font-family:monospace;">' + 
+                        outputText.replace(/\n/g, '<br>') + '</div>';
+    } else {
+      output.innerHTML = '<div style="color:var(--text-muted);">Code executed successfully (no output)</div>';
+    }
+    output.style.display = 'block';
+  } catch (error) {
+    // Restore console.log
+    console.log = originalLog;
+    output.innerHTML = '<div style="color:var(--error);white-space:pre-wrap;font-family:monospace;">Error: ' + 
+                      error.message + '</div>';
+    output.style.display = 'block';
+  }
+}
+
+function resetExampleCode(activityId) {
+  const editor = document.getElementById(`code-${activityId}`);
+  const output = document.getElementById(`output-${activityId}`);
+  // Get the initial code from the data attribute
+  const initialCode = editor.getAttribute('data-initial') || '';
+  editor.value = initialCode;
+  output.style.display = 'none';
+  output.innerHTML = '';
+}
+
+function checkActivity(activityId) {
+  alert('Activity checking not implemented in demo. This would validate your solution.');
+}
+
+function saveReflection(activityId) {
+  const reflection = document.getElementById(`reflection-${activityId}`).value;
+  localStorage.setItem(`reflection-${activityId}`, reflection);
+  alert('Reflection saved!');
+}
+
+function markReadingComplete(activityId) {
+  const courseId = document.body.dataset.courseId;
+  const lessonId = document.body.dataset.lessonId;
+  localStorage.setItem(`activity-${courseId}-${lessonId}-${activityId}`, 'complete');
+  alert('Reading marked as complete!');
+}
+
+function saveProject(activityId) {
+  const project = document.getElementById(`project-${activityId}`).value;
+  localStorage.setItem(`project-${activityId}`, project);
+  alert('Project progress saved!');
+}
+
+function markProjectComplete(activityId) {
+  const courseId = document.body.dataset.courseId;
+  const lessonId = document.body.dataset.lessonId;
+  localStorage.setItem(`activity-${courseId}-${lessonId}-${activityId}`, 'complete');
+  alert('Project marked as complete!');
+}
+
+function saveLab(activityId) {
+  const lab = document.getElementById(`lab-${activityId}`).value;
+  localStorage.setItem(`lab-${activityId}`, lab);
+  alert('Lab notes saved!');
+}
+
+function markLabComplete(activityId) {
+  const courseId = document.body.dataset.courseId;
+  const lessonId = document.body.dataset.lessonId;
+  localStorage.setItem(`activity-${courseId}-${lessonId}-${activityId}`, 'complete');
+  alert('Lab marked as complete!');
+}
+</script>
+

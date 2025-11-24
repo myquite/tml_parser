@@ -1,0 +1,15 @@
+<div class="slide" data-slide-type="{{ slide_type }}" data-slide-id="{{ slide_id }}">
+  <div class="slide-content">
+    {{ slide_content }}
+  </div>
+  <div class="slide-navigation">
+    <button class="btn btn-nav" onclick="previousSlide()" id="prev-btn" style="display:none;">
+      <span>←</span> Previous
+    </button>
+    <span class="slide-counter">{{ slide_number }} / {{ total_slides }}</span>
+    <button class="btn btn-nav" onclick="nextSlide()" id="next-btn">
+      Next <span>→</span>
+    </button>
+  </div>
+</div>
+

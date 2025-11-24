@@ -1,39 +1,324 @@
 <?xml version="1.0"?>
 <course id="js-fundamentals" title="JavaScript Fundamentals" level="beginner" duration="P6W" lang="en">
-  <objective>Understand ES6 basics</objective>
-  <objective>Build 3 small projects</objective>
+  <objective>Understand JavaScript variables and data types</objective>
+  <objective>Learn to declare and use variables with let, const, and var</objective>
+  <objective>Practice with worked examples</objective>
 
   <module id="mod-1" title="Getting Started" order="1">
-    <lesson id="les-1" title="Variables and Data Types" order="1" duration="PT40M">
+    <lesson id="les-1" title="Variables and Data Types" order="1" duration="PT45M">
+      
+      <!-- Content Slide 1: Introduction -->
       <content format="markdown">
-        ## What are Variables?
-        Variables store data values.
+        ## Introduction to Variables
 
-        ### Types
-        - string
-        - number
-        - boolean
-        - object
-        - undefined
+        Variables are containers that store data values. Think of them as labeled boxes where you can store information to use later in your program.
 
-        **Task:** Create five variables using `let` or `const`.
+        In JavaScript, variables can hold different types of data:
+        - **Numbers**: `42`, `3.14`, `-10`
+        - **Strings**: `"Hello"`, `'World'`
+        - **Booleans**: `true`, `false`
+        - **Objects**: `{name: "John"}`
+        - **Arrays**: `[1, 2, 3]`
+        - **Undefined**: `undefined`
+        - **Null**: `null`
       </content>
 
-      <activity id="act-1" type="coding" est="PT20M">
-        <instructions>Create 5 variables of different types.</instructions>
-        <expected>Five declarations using let/const.</expected>
+      <!-- Content Slide 2: Variable Declaration -->
+      <content format="markdown">
+        ## Declaring Variables
+
+        JavaScript provides three ways to declare variables:
+
+        ### `let` - Block-scoped variable
+        ```javascript
+        let age = 25;
+        age = 26; // Can be reassigned
+        ```
+
+        ### `const` - Constant (cannot be reassigned)
+        ```javascript
+        const pi = 3.14159;
+        // pi = 3.14; // Error! Cannot reassign const
+        ```
+
+        ### `var` - Function-scoped (older syntax)
+        ```javascript
+        var name = "John";
+        // Avoid using var in modern JavaScript
+        ```
+
+        **Key Points:**
+        - Use `const` by default
+        - Use `let` when you need to reassign the variable
+        - Avoid `var` in modern code
+      </content>
+
+      <!-- Content Slide 3: Data Types -->
+      <content format="markdown">
+        ## JavaScript Data Types
+
+        JavaScript has **dynamic typing** - variables can change types:
+
+        ```javascript
+        let value = 42;        // number
+        value = "Hello";        // now a string
+        value = true;           // now a boolean
+        ```
+
+        ### Primitive Types:
+        - **Number**: `42`, `3.14`
+        - **String**: `"text"`, `'text'`
+        - **Boolean**: `true`, `false`
+        - **Undefined**: `undefined` (variable declared but not assigned)
+        - **Null**: `null` (intentional empty value)
+        - **Symbol**: `Symbol('id')` (unique identifier)
+
+        ### Reference Types:
+        - **Object**: `{key: "value"}`
+        - **Array**: `[1, 2, 3]`
+        - **Function**: `function() {}`
+      </content>
+
+      <!-- Content Slide 4: Variable Naming -->
+      <content format="markdown">
+        ## Variable Naming Rules
+
+        Good variable names make code readable and maintainable.
+
+        ### Rules:
+        1. Must start with a letter, `$`, or `_`
+        2. Can contain letters, numbers, `$`, and `_`
+        3. Case-sensitive: `name` ≠ `Name`
+        4. Cannot use reserved words: `let`, `const`, `if`, etc.
+
+        ### Best Practices:
+        ```javascript
+        // ✅ Good - descriptive and clear
+        let userName = "John";
+        let itemCount = 5;
+        const MAX_SIZE = 100;
+
+        // ❌ Bad - unclear or confusing
+        let x = "John";
+        let n = 5;
+        let temp = 100;
+        ```
+
+        **Conventions:**
+        - Use **camelCase** for variables: `firstName`
+        - Use **UPPER_CASE** for constants: `MAX_SIZE`
+        - Use descriptive names that explain purpose
+      </content>
+
+      <!-- Content Slide 5: Variable Scope -->
+      <content format="markdown">
+        ## Variable Scope
+
+        **Scope** determines where a variable can be accessed in your code.
+
+        ### Block Scope (`let` and `const`)
+        ```javascript
+        {
+          let x = 10;
+          const y = 20;
+          // x and y only exist inside this block
+        }
+        // x and y are not accessible here
+        ```
+
+        ### Function Scope (`var`)
+        ```javascript
+        function example() {
+          var z = 30;
+          // z exists in entire function
+        }
+        // z is not accessible here
+        ```
+
+        **Why it matters:**
+        - `let` and `const` are **block-scoped** (safer)
+        - `var` is **function-scoped** (can cause bugs)
+        - Always prefer `let` and `const` over `var`
+      </content>
+
+      <!-- Worked Example 1: Basic Variable Usage -->
+      <activity id="act-1" type="reading" est="PT5M">
+        <instructions>Study this worked example showing how to declare and use variables.</instructions>
+        <expected>**Example 1: Basic Variable Declaration**
+
+```javascript
+// Declare variables with different data types
+let userName = "Alice";
+const userAge = 30;
+let isActive = true;
+let score = 95.5;
+
+// Use the variables
+console.log(userName);    // Output: "Alice"
+console.log(userAge);     // Output: 30
+console.log(isActive);    // Output: true
+console.log(score);       // Output: 95.5
+
+// Reassign a let variable
+userName = "Bob";
+console.log(userName);    // Output: "Bob"
+
+// Try to reassign const (this would cause an error)
+// userAge = 31; // TypeError: Assignment to constant variable
+```
+
+**Key Takeaways:**
+- Variables store values that can be used throughout your code
+- `let` allows reassignment, `const` does not
+- Variables can hold different data types</expected>
       </activity>
 
+      <!-- Worked Example 2: Variable Operations -->
+      <activity id="act-2" type="reading" est="PT5M">
+        <instructions>Study this worked example showing how to perform operations with variables.</instructions>
+        <expected>**Example 2: Working with Variables**
+
+```javascript
+// Declare variables
+let price = 19.99;
+let quantity = 3;
+const taxRate = 0.08;
+
+// Calculate total
+let subtotal = price * quantity;
+let tax = subtotal * taxRate;
+let total = subtotal + tax;
+
+// Display results
+console.log("Subtotal: $" + subtotal);  // Output: "Subtotal: $59.97"
+console.log("Tax: $" + tax.toFixed(2)); // Output: "Tax: $4.80"
+console.log("Total: $" + total.toFixed(2)); // Output: "Total: $64.77"
+
+// Update quantity and recalculate
+quantity = 5;
+subtotal = price * quantity;
+tax = subtotal * taxRate;
+total = subtotal + tax;
+
+console.log("New Total: $" + total.toFixed(2)); // Output: "New Total: $107.95"
+```
+
+**Key Takeaways:**
+- Variables can be used in calculations
+- You can update `let` variables and recalculate
+- `const` values remain constant throughout</expected>
+      </activity>
+
+      <!-- Worked Example 3: Variable Scope -->
+      <activity id="act-3" type="reading" est="PT5M">
+        <instructions>Study this worked example demonstrating variable scope with let and const.</instructions>
+        <expected>**Example 3: Understanding Scope**
+
+```javascript
+// Global scope
+let globalVar = "I'm global";
+
+function exampleFunction() {
+  // Function scope
+  let functionVar = "I'm in function scope";
+  const functionConst = "I'm also in function scope";
+  
+  if (true) {
+    // Block scope
+    let blockVar = "I'm in block scope";
+    const blockConst = "I'm also in block scope";
+    
+    console.log(globalVar);      // ✅ Accessible
+    console.log(functionVar);     // ✅ Accessible
+    console.log(blockVar);        // ✅ Accessible
+  }
+  
+  // console.log(blockVar);      // ❌ Error: blockVar is not defined
+  console.log(functionVar);      // ✅ Accessible
+  console.log(globalVar);        // ✅ Accessible
+}
+
+exampleFunction();
+// console.log(functionVar);    // ❌ Error: functionVar is not defined
+console.log(globalVar);          // ✅ Accessible
+```
+
+**Key Takeaways:**
+- Variables declared with `let` and `const` are block-scoped
+- Inner blocks can access outer scope variables
+- Outer blocks cannot access inner scope variables
+- This prevents variable name conflicts and bugs</expected>
+      </activity>
+
+      <!-- Practice Activity -->
+      <activity id="act-4" type="coding" est="PT10M">
+        <instructions>Practice what you've learned. Create variables for a simple shopping cart:
+
+1. Declare a `const` variable for the tax rate (0.10)
+2. Declare a `let` variable for item price (25.99)
+3. Declare a `let` variable for quantity (2)
+4. Calculate and display the subtotal, tax, and total
+
+Use console.log() to display your results.</instructions>
+        <expected>Your code should:
+- Use const for the tax rate
+- Use let for price and quantity
+- Calculate subtotal = price * quantity
+- Calculate tax = subtotal * taxRate
+- Calculate total = subtotal + tax
+- Display all three values</expected>
+      </activity>
+
+      <!-- Assessment aligned with lesson content -->
       <assessment id="quiz-1" type="quiz" passScore="70">
         <question type="mcq" points="1">
-          <stem>Which declares a block-scoped variable?</stem>
-          <choice correct="true">let</choice>
+          <stem>Which keyword declares a variable that cannot be reassigned?</stem>
+          <choice correct="true">const</choice>
+          <choice>let</choice>
           <choice>var</choice>
-          <choice>false</choice>
+          <choice>static</choice>
         </question>
+        
+        <question type="mcq" points="1">
+          <stem>What is the scope of variables declared with `let` and `const`?</stem>
+          <choice correct="true">Block scope</choice>
+          <choice>Function scope</choice>
+          <choice>Global scope</choice>
+          <choice>Module scope</choice>
+        </question>
+        
         <question type="truefalse" points="1">
-          <statement>`const` variables cannot be reassigned.</statement>
+          <statement>In JavaScript, a variable can change its data type after being declared.</statement>
           <answer value="true"/>
+        </question>
+        
+        <question type="mcq" points="1">
+          <stem>Which of the following is a valid variable name in JavaScript?</stem>
+          <choice correct="true">userName</choice>
+          <choice>2userName</choice>
+          <choice>user-name</choice>
+          <choice>let</choice>
+        </question>
+        
+        <question type="mcq" points="1">
+          <stem>What is the best practice for declaring a variable that will never change?</stem>
+          <choice correct="true">Use `const`</choice>
+          <choice>Use `let`</choice>
+          <choice>Use `var`</choice>
+          <choice>Use `static`</choice>
+        </question>
+        
+        <question type="truefalse" points="1">
+          <statement>Variables declared with `var` are block-scoped like `let` and `const`.</statement>
+          <answer value="false"/>
+        </question>
+        
+        <question type="mcq" points="1">
+          <stem>Which data type represents an intentional empty value?</stem>
+          <choice>undefined</choice>
+          <choice correct="true">null</choice>
+          <choice>empty</choice>
+          <choice>void</choice>
         </question>
       </assessment>
     </lesson>

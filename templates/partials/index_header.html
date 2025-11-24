@@ -1,5 +1,11 @@
-<h1>{{ title }}</h1>
-<div class="small">Level: {{ level }} • Duration: {{ duration }}</div>
-<div class="progress"><span></span></div>
-<div id="progress-label" class="small">0% complete</div>
+<h1 style="margin-bottom:0.75rem;">{{ title }}</h1>
+<div class="small" style="margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+  <span>Level: <strong>{{ level }}</strong></span>
+  <span>•</span>
+  <span>Duration: <strong>{{ duration }}</strong></span>
+</div>
+<div style="margin-bottom:0.5rem;">
+  <div class="progress"><span></span></div>
+  <div id="progress-label" class="small" style="margin-top:0.5rem;">0% complete</div>
+</div>
 

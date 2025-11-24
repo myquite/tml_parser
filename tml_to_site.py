@@ -6,6 +6,7 @@ Usage:
   python tml_to_site.py path/to/course.tml out_dir/ [template_dir]
 """
 import os, re
+import html
 from xml.etree import ElementTree as ET
 from template_engine import TemplateEngine
 
@@ -17,27 +18,79 @@ def safe_filename(name: str) -> str:
 def mini_markdown(md: str) -> str:
     import re
     md = md.strip()
-    md = re.sub(r"`([^`]+)`", r"<code>\1</code>", md)
+    
+    # First, extract and replace code blocks (```...```)
+    code_blocks = []
+    code_block_placeholder = "___CODE_BLOCK_{}___"
+    
+    def replace_code_block(match):
+        idx = len(code_blocks)
+        lang = match.group(1) or ""
+        code = match.group(2)
+        code_blocks.append((lang, code))
+        return code_block_placeholder.format(idx)
+    
+    # Match code blocks: ```lang\ncode\n```
+    md = re.sub(r"```(\w+)?\n(.*?)```", replace_code_block, md, flags=re.DOTALL)
+    
+    # Now handle inline formatting
     md = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", md)
     md = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", md)
+    
+    # Process lines
     lines, out = [], []
+    in_code_block = False
+    current_code = []
+    
     for line in md.splitlines():
         s = line.strip()
-        if s.startswith("### "): lines.append(f"<h3>{s[4:]}</h3>")
-        elif s.startswith("## "): lines.append(f"<h2>{s[3:]}</h2>")
-        elif s.startswith("# "):  lines.append(f"<h1>{s[2:]}</h1>")
-        elif s.startswith("- "):  lines.append(f"<li>{s[2:]}</li>")
+        
+        # Check if this line is a code block placeholder
+        code_match = re.match(r"___CODE_BLOCK_(\d+)___", s)
+        if code_match:
+            idx = int(code_match.group(1))
+            lang, code = code_blocks[idx]
+            # Add code block
+            code_html = f'<pre><code class="language-{lang}">{code.strip()}</code></pre>'
+            lines.append(code_html)
+            continue
+        
+        if s.startswith("### "): 
+            lines.append(f"<h3>{s[4:]}</h3>")
+        elif s.startswith("## "): 
+            lines.append(f"<h2>{s[3:]}</h2>")
+        elif s.startswith("# "):  
+            lines.append(f"<h1>{s[2:]}</h1>")
+        elif s.startswith("- "):  
+            lines.append(f"<li>{s[2:]}</li>")
         else:
             lines.append("" if s=="" else f"<p>{s}</p>")
-    in_ul=False
-    for l in lines:
+    
+    # Handle inline code (single backticks) - do this after processing lines
+    processed_lines = []
+    for line in lines:
+        # Only process inline code in paragraph tags, not in code blocks
+        if line.startswith("<p>") or line.startswith("<li>") or line.startswith("<h"):
+            # Replace inline code
+            line = re.sub(r"`([^`]+)`", r'<code>\1</code>', line)
+        processed_lines.append(line)
+    
+    # Build output with list handling
+    in_ul = False
+    for l in processed_lines:
         if l.startswith("<li>"):
-            if not in_ul: out.append("<ul>"); in_ul=True
+            if not in_ul: 
+                out.append("<ul>")
+                in_ul = True
             out.append(l)
         else:
-            if in_ul: out.append("</ul>"); in_ul=False
+            if in_ul: 
+                out.append("</ul>")
+                in_ul = False
             out.append(l)
-    if in_ul: out.append("</ul>")
+    if in_ul: 
+        out.append("</ul>")
+    
     return "\n".join(out)
 
 
@@ -197,43 +250,136 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
     with open(os.path.join(outdir, "index.html"), "w", encoding="utf-8") as f:
         f.write(index_html)
 
-    # Render lesson pages
+    # Render lesson pages with slides
     for m in course.modules:
         for l in m.lessons:
-            # Process content
-            content_parts = []
-            for c in l.content:
-                if c.format == "html":
-                    content_parts.append(c.value)
-                elif c.format == "markdown":
-                    content_parts.append(mini_markdown(c.value))
-                else:
-                    content_parts.append(f"<pre>{c.value}</pre>")
-            content_html = "\n".join(content_parts) if content_parts else "<p>No content.</p>"
-
-            # Render activities
-            activities_html = ""
-            if l.activities:
-                blocks = []
-                for a in l.activities:
-                    expected_html = f"<p><strong>Expected:</strong> {a.expected}</p>" if a.expected else ""
-                    est_html = f"<p class='small'>Estimated: {a.est}</p>" if a.est else ""
-                    activity_html = engine.render_with_defaults(
-                        'partials/activity.html',
+            slides = []
+            slide_num = 0
+            
+            # Process content - create one slide per content section
+            if l.content:
+                for idx, c in enumerate(l.content):
+                    # Process each content section individually
+                    if c.format == "html":
+                        content_html = c.value
+                    elif c.format == "markdown":
+                        content_html = mini_markdown(c.value)
+                    else:
+                        content_html = f"<pre>{c.value}</pre>"
+                    
+                    # Render content slide for this section
+                    content_slide_html = engine.render_with_defaults(
+                        'partials/content_slide.html',
+                        {'content_html': content_html}
+                    )
+                    
+                    slide_num += 1
+                    slide_html = engine.render_with_defaults(
+                        'partials/slide.html',
                         {
-                            'activity_type': a.type.title(),
-                            'instructions': a.instructions or "",
-                            'expected_html': expected_html,
-                            'est_html': est_html
+                            'slide_type': 'content',
+                            'slide_id': f'content-{l.id or safe_filename(l.title)}-{idx}',
+                            'slide_content': content_slide_html,
+                            'slide_number': str(slide_num),
+                            'total_slides': '1'  # Will update later
                         }
                     )
-                    blocks.append(activity_html)
-                activities_html = "\n".join(blocks)
+                    slides.append(slide_html)
 
-            # Render assessments
-            assessments_html = ""
+            # Render activity slides
+            if l.activities:
+                for a in l.activities:
+                    est_html = f'<p class="small">Estimated time: {a.est}</p>' if a.est else ""
+                    
+                    # Check if this is a worked example (reading activity with code blocks)
+                    is_example = (a.type.lower() == "reading" and a.expected and "```javascript" in a.expected)
+                    
+                    if is_example:
+                        # Parse the worked example
+                        import re
+                        expected = a.expected
+                        
+                        # Extract title/explanation (before first code block)
+                        code_match = re.search(r'```javascript\n(.*?)```', expected, re.DOTALL)
+                        if code_match:
+                            initial_code = code_match.group(1).strip()
+                            # HTML escape the code for the textarea
+                            initial_code_escaped = html.escape(initial_code)
+                            # Get text before code block
+                            before_code = expected[:code_match.start()].strip()
+                            # Get text after code block (key takeaways)
+                            after_code = expected[code_match.end():].strip()
+                            
+                            # Render explanation
+                            example_explanation = ""
+                            if before_code:
+                                # Remove markdown bold and process
+                                before_code = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', before_code)
+                                example_explanation = f'<div class="activity-expected"><h3>Example</h3><div class="expected-content">{mini_markdown(before_code)}</div></div>'
+                            
+                            # Render key takeaways
+                            key_takeaways = ""
+                            if after_code and ("Key Takeaways" in after_code or "takeaway" in after_code.lower()):
+                                key_takeaways = f'<div class="activity-expected" style="margin-top:1.5rem;"><h3>Key Takeaways</h3><div class="expected-content">{mini_markdown(after_code)}</div></div>'
+                            
+                            activity_content = engine.render_with_defaults(
+                                'partials/activity_example.html',
+                                {
+                                    'activity_id': a.id or f"act-{len(slides)}",
+                                    'instructions': a.instructions or "",
+                                    'est_html': est_html,
+                                    'example_explanation': example_explanation,
+                                    'initial_code': initial_code_escaped,
+                                    'key_takeaways': key_takeaways
+                                }
+                            )
+                        else:
+                            # Fallback to regular reading
+                            expected_html = f'<div class="activity-expected"><h3>Expected Output</h3><div class="expected-content">{mini_markdown(a.expected)}</div></div>'
+                            activity_content = engine.render_with_defaults(
+                                'partials/activity_reading.html',
+                                {
+                                    'activity_id': a.id or f"act-{len(slides)}",
+                                    'instructions': a.instructions or "",
+                                    'expected_html': expected_html,
+                                    'est_html': est_html
+                                }
+                            )
+                    else:
+                        # Regular activity
+                        expected_html = ""
+                        if a.expected:
+                            expected_html = f'<div class="activity-expected"><h3>Expected Output</h3><div class="expected-content">{mini_markdown(a.expected)}</div></div>'
+                        
+                        # Choose activity template based on type
+                        activity_template = f'partials/activity_{a.type.lower()}.html'
+                        
+                        activity_content = engine.render_with_defaults(
+                            activity_template,
+                            {
+                                'activity_id': a.id or f"act-{len(slides)}",
+                                'activity_type': a.type.title(),
+                                'instructions': a.instructions or "",
+                                'expected_html': expected_html,
+                                'est_html': est_html
+                            }
+                        )
+                    
+                    slide_num += 1
+                    slide_html = engine.render_with_defaults(
+                        'partials/slide.html',
+                        {
+                            'slide_type': 'activity',
+                            'slide_id': f'activity-{a.id or f"act-{len(slides)}"}',
+                            'slide_content': activity_content,
+                            'slide_number': str(slide_num),
+                            'total_slides': '1'  # Will update later
+                        }
+                    )
+                    slides.append(slide_html)
+
+            # Render assessment slides
             if l.assessments:
-                blocks = []
                 for asmt in l.assessments:
                     q_html = []
                     for idx, q in enumerate(asmt.questions, start=1):
@@ -281,8 +427,8 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
   <div>Unsupported question type in demo exporter.</div>
 </div>""")
                     
-                    assessment_html = engine.render_with_defaults(
-                        'partials/assessment.html',
+                    assessment_content = engine.render_with_defaults(
+                        'partials/assessment_slide.html',
                         {
                             'assess_id': asmt.id,
                             'course_id': course.id,
@@ -290,8 +436,51 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             'questions': ''.join(q_html)
                         }
                     )
-                    blocks.append(assessment_html)
-                assessments_html = "\n".join(blocks)
+                    
+                    slide_num += 1
+                    slide_html = engine.render_with_defaults(
+                        'partials/slide.html',
+                        {
+                            'slide_type': 'assessment',
+                            'slide_id': f'assessment-{asmt.id}',
+                            'slide_content': assessment_content,
+                            'slide_number': str(slide_num),
+                            'total_slides': '1'  # Will update later
+                        }
+                    )
+                    slides.append(slide_html)
+
+            # Add completion slide
+            completion_content = f"""<div class="card" style="text-align:center;padding:3rem 2rem;">
+  <h2 style="margin-bottom:1rem;">🎉 Lesson Complete!</h2>
+  <p style="font-size:1.125rem;margin-bottom:2rem;color:var(--text-secondary);">You've finished this lesson. Great work!</p>
+  <button class="btn" onclick="markLessonComplete('{course.id}','{l.id or safe_filename(l.title)}')" style="font-size:1rem;padding:1rem 2rem;">✓ Mark Lesson Complete</button>
+</div>"""
+            
+            slide_num += 1
+            completion_slide = engine.render_with_defaults(
+                'partials/slide.html',
+                {
+                    'slide_type': 'completion',
+                    'slide_id': f'completion-{l.id or safe_filename(l.title)}',
+                    'slide_content': completion_content,
+                    'slide_number': str(slide_num),
+                    'total_slides': str(slide_num)
+                }
+            )
+            slides.append(completion_slide)
+
+            # Update slide numbers and total in all slides
+            total_slides = len(slides)
+            updated_slides = []
+            for idx, slide_html in enumerate(slides, start=1):
+                # Replace placeholders that might have been left by template engine
+                updated_slide = slide_html.replace('{{ slide_number }}', str(idx))
+                updated_slide = updated_slide.replace('{{ total_slides }}', str(total_slides))
+                # Fix slide counter text if it was rendered with placeholder
+                import re
+                updated_slide = re.sub(r'(\d+) / 1', rf'\1 / {total_slides}', updated_slide)
+                updated_slides.append(updated_slide)
 
             # Render lesson header
             lesson_header_html = engine.render_with_defaults(
@@ -307,25 +496,17 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                 {'header_content': lesson_header_html}
             )
             
-            # Build lesson content
-            lesson_content = f"""<div class="card">
-    {content_html}
-  </div>
-  {activities_html}
-  {assessments_html}
-  <div class="card">
-    <button class="btn" onclick="markLessonComplete('{course.id}','{l.id or safe_filename(l.title)}')">Mark Lesson Complete</button>
-  </div>"""
-            
-            # Render base template for lesson
+            # Render lesson template with slides
             lesson_html = engine.render_with_defaults(
-                'base.html',
+                'lesson.html',
                 {
-                    'title': f"{l.title} — {course.title}",
+                    'lesson_title': l.title,
+                    'course_title': course.title,
                     'course_id': course.id,
                     'total_lessons': str(total_lessons),
-                    'content': lesson_content,
-                    'header_html': header_html
+                    'lesson_id': l.id or safe_filename(l.title),
+                    'header_html': header_html,
+                    'slides': '\n'.join(updated_slides)
                 }
             )
             
