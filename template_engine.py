@@ -2,6 +2,13 @@
 """
 Template Engine for TML Site Generator.
 Supports templates, partials, and variable substitution.
+
+All render methods (render, render_string, render_with_defaults) automatically
+fall back to built-in default templates and partials when files are not found.
+This ensures consistent behavior across the API.
+
+To disable default fallbacks, use render(..., use_defaults=False) or
+render_string(..., use_defaults=False).
 """
 import os
 import re
@@ -9,7 +16,13 @@ from typing import Dict, Optional
 
 
 class TemplateEngine:
-    """Simple template engine with partial support."""
+    """
+    Simple template engine with partial support.
+    
+    All render methods automatically fall back to built-in defaults when
+    templates or partials are not found in the filesystem. This provides
+    a consistent API where defaults are always available.
+    """
     
     def __init__(self, template_dir: Optional[str] = None):
         """
@@ -22,8 +35,17 @@ class TemplateEngine:
         self._cache: Dict[str, str] = {}
         self._partial_cache: Dict[str, str] = {}
     
-    def _load_template(self, name: str) -> str:
-        """Load a template from file or return default."""
+    def _load_template(self, name: str, use_defaults: bool = True) -> str:
+        """
+        Load a template from file or return default.
+        
+        Args:
+            name: Template name
+            use_defaults: If True, fall back to built-in defaults if file not found
+        
+        Returns:
+            Template content or empty string
+        """
         if name in self._cache:
             return self._cache[name]
         
@@ -36,11 +58,26 @@ class TemplateEngine:
                     self._cache[name] = content
                     return content
         
-        # Return empty string if not found (caller should handle defaults)
+        # Fall back to defaults if enabled
+        if use_defaults:
+            default = self.get_default_template(name)
+            if default:
+                self._cache[name] = default
+                return default
+        
         return ""
     
-    def _load_partial(self, name: str) -> str:
-        """Load a partial template."""
+    def _load_partial(self, name: str, use_defaults: bool = True) -> str:
+        """
+        Load a partial template.
+        
+        Args:
+            name: Partial name (with or without .html extension)
+            use_defaults: If True, fall back to built-in defaults if file not found
+        
+        Returns:
+            Partial content or empty string
+        """
         if name in self._partial_cache:
             return self._partial_cache[name]
         
@@ -58,36 +95,62 @@ class TemplateEngine:
                     self._partial_cache[name] = content
                     return content
         
+        # Fall back to defaults if enabled
+        if use_defaults:
+            # Default keys always have .html extension
+            if name.endswith('.html'):
+                default_key = f'partials/{name}'
+            else:
+                default_key = f'partials/{name}.html'
+            
+            default = self.get_default_template(default_key)
+            if default:
+                self._partial_cache[name] = default
+                return default
+        
         return ""
     
-    def _render_partials(self, content: str) -> str:
-        """Replace {{> partial_name }} with partial content."""
+    def _render_partials(self, content: str, use_defaults: bool = True) -> str:
+        """
+        Replace {{> partial_name }} with partial content.
+        
+        Args:
+            content: Template content with partial references
+            use_defaults: If True, fall back to built-in defaults for missing partials
+        """
         def replace_partial(match):
             partial_name = match.group(1).strip()
-            partial_content = self._load_partial(partial_name)
+            partial_content = self._load_partial(partial_name, use_defaults=use_defaults)
             if partial_content:
                 # Recursively render partials within partials
-                return self._render_partials(partial_content)
+                return self._render_partials(partial_content, use_defaults=use_defaults)
             return f"<!-- Partial '{partial_name}' not found -->"
         
         pattern = r'\{\{>\s*([^\s}]+)\s*\}\}'
         return re.sub(pattern, replace_partial, content)
     
-    def render(self, template_name: str, context: Dict[str, str]) -> str:
+    def render(self, template_name: str, context: Dict[str, str], use_defaults: bool = True) -> str:
         """
         Render a template with the given context.
+        
+        This method automatically falls back to built-in default templates if the
+        template file is not found. To disable this behavior, set use_defaults=False.
         
         Args:
             template_name: Name of the template file
             context: Dictionary of variables to substitute
+            use_defaults: If True (default), fall back to built-in defaults for missing templates/partials
             
         Returns:
-            Rendered template string
+            Rendered template string, or HTML comment if template not found and use_defaults=False
         """
-        template = self._load_template(template_name)
+        template = self._load_template(template_name, use_defaults=use_defaults)
         
-        # Render partials first
-        template = self._render_partials(template)
+        if not template:
+            return f"<!-- Template '{template_name}' not found -->"
+        
+        # Render partials first (with same default behavior)
+        template = self._render_partials(template, use_defaults=use_defaults)
         
         # Replace variables: {{ variable_name }}
         def replace_var(match):
@@ -99,19 +162,24 @@ class TemplateEngine:
         
         return result
     
-    def render_string(self, template_string: str, context: Dict[str, str]) -> str:
+    def render_string(self, template_string: str, context: Dict[str, str], use_defaults: bool = True) -> str:
         """
         Render a template string directly (for inline templates).
         
+        Partial references ({{> partial_name }}) in the template string will
+        automatically fall back to built-in defaults if the partial file is not found.
+        To disable this behavior, set use_defaults=False.
+        
         Args:
-            template_string: Template string with {{ variables }}
+            template_string: Template string with {{ variables }} and optionally {{> partials }}
             context: Dictionary of variables to substitute
+            use_defaults: If True (default), fall back to built-in defaults for missing partials
             
         Returns:
             Rendered string
         """
-        # Render partials first
-        template_string = self._render_partials(template_string)
+        # Render partials first (with default fallback)
+        template_string = self._render_partials(template_string, use_defaults=use_defaults)
         
         # Replace variables
         def replace_var(match):
@@ -252,6 +320,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
         """
         Render template, falling back to defaults if file not found.
         
+        **Note:** This method is now equivalent to `render()` with `use_defaults=True`.
+        It is kept for backward compatibility. All render methods now support
+        default fallbacks by default.
+        
         Args:
             template_name: Name of the template file
             context: Dictionary of variables to substitute
@@ -259,58 +331,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         Returns:
             Rendered template string
         """
-        template = self._load_template(template_name)
-        
-        # If template not found, try to get default
-        if not template:
-            template = self.get_default_template(template_name)
-        
-        if not template:
-            return f"<!-- Template '{template_name}' not found -->"
-        
-        # For partials, also check defaults
-        def load_partial_with_default(name):
-            # Try loading from file first
-            content = self._load_partial(name)
-            if not content:
-                # Try with .html extension
-                if not name.endswith('.html'):
-                    content = self._load_partial(f"{name}.html")
-            if not content:
-                # Fall back to defaults
-                default_key = f'partials/{name}' if not name.endswith('.html') else f'partials/{name}'
-                content = self.get_default_template(default_key)
-            return content
-        
-        # Replace partials: {{> partial_name }}
-        def replace_partial(match):
-            partial_name = match.group(1).strip()
-            partial_content = load_partial_with_default(partial_name)
-            if partial_content:
-                # Render partial with same context (for nested variables)
-                return self._render_partials(partial_content)
-            return f"<!-- Partial '{partial_name}' not found -->"
-        
-        # First pass: render partials recursively
-        max_iterations = 10  # Prevent infinite loops
-        for _ in range(max_iterations):
-            pattern = r'\{\{>\s*([^\s}]+)\s*\}\}'
-            new_template = re.sub(pattern, replace_partial, template)
-            if new_template == template:
-                break
-            template = new_template
-        
-        # Replace variables: {{ variable_name }}
-        def replace_var(match):
-            var_name = match.group(1).strip()
-            value = context.get(var_name, "")
-            # If value is empty and it's a partial placeholder, leave it
-            if not value and var_name.startswith('>'):
-                return match.group(0)
-            return value if value else f"{{{{ {var_name} }}}}"
-        
-        pattern = r'\{\{\s*([^\s}]+)\s*\}\}'
-        result = re.sub(pattern, replace_var, template)
-        
-        return result
+        # Delegate to render() with defaults enabled
+        return self.render(template_name, context, use_defaults=True)
 
