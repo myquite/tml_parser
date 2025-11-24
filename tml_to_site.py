@@ -10,12 +10,113 @@ import html
 from xml.etree import ElementTree as ET
 from template_engine import TemplateEngine
 
+def escape_html(text: str) -> str:
+    """Escape HTML special characters to prevent XSS."""
+    if text is None:
+        return ""
+    return html.escape(str(text), quote=True)
+
+def safe_markdown(md: str) -> str:
+    """
+    Safely render markdown with HTML escaping.
+    User content is escaped, but markdown formatting is preserved.
+    """
+    if not md:
+        return ""
+    
+    md = md.strip()
+    
+    # First, extract and replace code blocks (```...```)
+    code_blocks = []
+    code_block_placeholder = "___CODE_BLOCK_{}___"
+    
+    def replace_code_block(match):
+        idx = len(code_blocks)
+        lang = match.group(1) or ""
+        code = match.group(2)
+        # Escape code content for safety
+        code_blocks.append((lang, escape_html(code)))
+        return code_block_placeholder.format(idx)
+    
+    # Match code blocks: ```lang\ncode\n```
+    md = re.sub(r"```(\w+)?\n(.*?)```", replace_code_block, md, flags=re.DOTALL)
+    
+    # Escape the entire markdown text first (except our placeholders)
+    # We'll unescape specific parts after processing
+    md_escaped = escape_html(md)
+    
+    # Restore code block placeholders (they're safe)
+    for idx in range(len(code_blocks)):
+        md_escaped = md_escaped.replace(escape_html(code_block_placeholder.format(idx)), code_block_placeholder.format(idx))
+    
+    # Now process markdown formatting on escaped text
+    # Bold: **text** -> <strong>text</strong>
+    md_escaped = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', md_escaped)
+    # Italic: *text* -> <em>text</em> (but not if it's part of **)
+    md_escaped = re.sub(r'(?<!\*)\*([^*\n]+)\*(?!\*)', r'<em>\1</em>', md_escaped)
+    
+    # Process lines
+    lines = []
+    for line in md_escaped.splitlines():
+        s = line.strip()
+        
+        # Check if this line is a code block placeholder
+        code_match = re.match(r"___CODE_BLOCK_(\d+)___", s)
+        if code_match:
+            idx = int(code_match.group(1))
+            lang, code = code_blocks[idx]
+            # Code is already escaped
+            code_html = f'<pre><code class="language-{escape_html(lang)}">{code.strip()}</code></pre>'
+            lines.append(code_html)
+            continue
+        
+        if s.startswith("### "): 
+            lines.append(f"<h3>{s[4:]}</h3>")
+        elif s.startswith("## "): 
+            lines.append(f"<h2>{s[3:]}</h2>")
+        elif s.startswith("# "):  
+            lines.append(f"<h1>{s[2:]}</h1>")
+        elif s.startswith("- "):  
+            lines.append(f"<li>{s[2:]}</li>")
+        else:
+            lines.append("" if s=="" else f"<p>{s}</p>")
+    
+    # Handle inline code (single backticks) - do this after processing lines
+    processed_lines = []
+    for line in lines:
+        # Only process inline code in paragraph/list/heading tags, not in code blocks
+        if line.startswith("<p>") or line.startswith("<li>") or line.startswith("<h"):
+            # Replace inline code - content is already escaped
+            line = re.sub(r'`([^`]+)`', r'<code>\1</code>', line)
+        processed_lines.append(line)
+    
+    # Build output with list handling
+    in_ul = False
+    out = []
+    for l in processed_lines:
+        if l.startswith("<li>"):
+            if not in_ul: 
+                out.append("<ul>")
+                in_ul = True
+            out.append(l)
+        else:
+            if in_ul: 
+                out.append("</ul>")
+                in_ul = False
+            out.append(l)
+    if in_ul: 
+        out.append("</ul>")
+    
+    return "\n".join(out)
+
 def safe_filename(name: str) -> str:
     name = re.sub(r"[^a-zA-Z0-9_-]+", "-", name.strip().lower())
     name = re.sub(r"-+", "-", name).strip("-")
     return name or "lesson"
 
 def mini_markdown(md: str) -> str:
+    """Legacy function - use safe_markdown for new code."""
+    return safe_markdown(md)
     import re
     md = md.strip()
     
@@ -116,6 +217,38 @@ class TCourse:
         self.id, self.title, self.level, self.duration = cid, title, level or "", duration or ""
         self.objectives, self.modules = objectives, modules
 
+class TMLParseError(Exception):
+    """Custom exception for TML parsing errors with user-friendly messages."""
+    pass
+
+def get_required_attr(element, attr_name, element_name=None, element_id=None):
+    """
+    Get a required attribute from an XML element with user-friendly error reporting.
+    
+    Args:
+        element: XML element
+        attr_name: Name of the required attribute
+        element_name: Type of element (e.g., 'module', 'lesson') for error messages
+        element_id: ID of the element for error messages
+    
+    Returns:
+        Attribute value
+    
+    Raises:
+        TMLParseError: If attribute is missing
+    """
+    value = element.attrib.get(attr_name)
+    if value is None:
+        element_type = element_name or element.tag
+        element_identifier = f" with id '{element_id}'" if element_id else ""
+        available_attrs = ", ".join(element.attrib.keys()) if element.attrib else "none"
+        raise TMLParseError(
+            f"Missing required attribute '{attr_name}' on <{element_type}> element{element_identifier}.\n"
+            f"Available attributes: {available_attrs if available_attrs else 'none'}\n"
+            f"Please add the '{attr_name}' attribute to this element."
+        )
+    return value
+
 def parse_tml(path: str) -> TCourse:
     tree = ET.parse(path)
     root = tree.getroot()
@@ -127,12 +260,18 @@ def parse_tml(path: str) -> TCourse:
     modules=[]
     for m in root.findall("./module"):
         mid = m.attrib.get("id","")
-        mtitle = m.attrib["title"]
+        try:
+            mtitle = get_required_attr(m, "title", "module", mid)
+        except TMLParseError as e:
+            raise TMLParseError(f"Error in module {mid or '(no id)'}: {e}")
         order = int(m.attrib.get("order","0") or "0")
         lessons=[]
         for l in m.findall("./lesson"):
             lid = l.attrib.get("id","")
-            ltitle = l.attrib["title"]
+            try:
+                ltitle = get_required_attr(l, "title", "lesson", lid)
+            except TMLParseError as e:
+                raise TMLParseError(f"Error in lesson {lid or '(no id)'} of module '{mtitle}': {e}")
             lduration = l.attrib.get("duration","")
             content=[]
             for c in l.findall("./content"):
@@ -145,6 +284,7 @@ def parse_tml(path: str) -> TCourse:
                 aid = a.attrib.get("id","")
                 atype = a.attrib.get("type","")
                 est = a.attrib.get("est","")
+                # Content will be escaped during rendering, but store raw for processing
                 instructions = (a.findtext("./instructions") or "").strip()
                 expected = (a.findtext("./expected") or "").strip()
                 activities.append(TActivity(aid, atype, est, instructions, expected))
@@ -261,11 +401,14 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                 for idx, c in enumerate(l.content):
                     # Process each content section individually
                     if c.format == "html":
-                        content_html = c.value
+                        # For HTML format, escape to prevent XSS
+                        # Note: In production, consider using a proper HTML sanitizer like bleach
+                        # that allows safe HTML tags while removing scripts
+                        content_html = escape_html(c.value)
                     elif c.format == "markdown":
-                        content_html = mini_markdown(c.value)
+                        content_html = safe_markdown(c.value)
                     else:
-                        content_html = f"<pre>{c.value}</pre>"
+                        content_html = f"<pre>{escape_html(c.value)}</pre>"
                     
                     # Render content slide for this section
                     content_slide_html = engine.render_with_defaults(
@@ -313,20 +456,19 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             # Render explanation
                             example_explanation = ""
                             if before_code:
-                                # Remove markdown bold and process
-                                before_code = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', before_code)
-                                example_explanation = f'<div class="activity-expected"><h3>Example</h3><div class="expected-content">{mini_markdown(before_code)}</div></div>'
+                                # Process with safe markdown (escapes HTML)
+                                example_explanation = f'<div class="activity-expected"><h3>Example</h3><div class="expected-content">{safe_markdown(before_code)}</div></div>'
                             
                             # Render key takeaways
                             key_takeaways = ""
                             if after_code and ("Key Takeaways" in after_code or "takeaway" in after_code.lower()):
-                                key_takeaways = f'<div class="activity-expected" style="margin-top:1.5rem;"><h3>Key Takeaways</h3><div class="expected-content">{mini_markdown(after_code)}</div></div>'
+                                key_takeaways = f'<div class="activity-expected" style="margin-top:1.5rem;"><h3>Key Takeaways</h3><div class="expected-content">{safe_markdown(after_code)}</div></div>'
                             
                             activity_content = engine.render_with_defaults(
                                 'partials/activity_example.html',
                                 {
                                     'activity_id': a.id or f"act-{len(slides)}",
-                                    'instructions': a.instructions or "",
+                                    'instructions': escape_html(a.instructions or ""),
                                     'est_html': est_html,
                                     'example_explanation': example_explanation,
                                     'initial_code': initial_code_escaped,
@@ -335,12 +477,12 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             )
                         else:
                             # Fallback to regular reading
-                            expected_html = f'<div class="activity-expected"><h3>Expected Output</h3><div class="expected-content">{mini_markdown(a.expected)}</div></div>'
+                            expected_html = f'<div class="activity-expected"><h3>Expected Output</h3><div class="expected-content">{safe_markdown(a.expected)}</div></div>'
                             activity_content = engine.render_with_defaults(
                                 'partials/activity_reading.html',
                                 {
                                     'activity_id': a.id or f"act-{len(slides)}",
-                                    'instructions': a.instructions or "",
+                                    'instructions': escape_html(a.instructions or ""),
                                     'expected_html': expected_html,
                                     'est_html': est_html
                                 }
@@ -349,7 +491,7 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                         # Regular activity
                         expected_html = ""
                         if a.expected:
-                            expected_html = f'<div class="activity-expected"><h3>Expected Output</h3><div class="expected-content">{mini_markdown(a.expected)}</div></div>'
+                            expected_html = f'<div class="activity-expected"><h3>Expected Output</h3><div class="expected-content">{safe_markdown(a.expected)}</div></div>'
                         
                         # Choose activity template based on type
                         activity_template = f'partials/activity_{a.type.lower()}.html'
@@ -359,7 +501,7 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             {
                                 'activity_id': a.id or f"act-{len(slides)}",
                                 'activity_type': a.type.title(),
-                                'instructions': a.instructions or "",
+                                'instructions': escape_html(a.instructions or ""),
                                 'expected_html': expected_html,
                                 'est_html': est_html
                             }
@@ -515,8 +657,21 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                 f.write(lesson_html)
 
 def build(tml_path: str, outdir: str, template_dir: str = None):
-    course = parse_tml(tml_path)
-    render_course(course, outdir, template_dir)
+    import sys
+    try:
+        course = parse_tml(tml_path)
+        render_course(course, outdir, template_dir)
+    except TMLParseError as e:
+        print(f"Error parsing TML file: {e}", file=sys.stderr)
+        sys.exit(1)
+    except ET.ParseError as e:
+        print(f"XML parsing error in {tml_path}: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 if __name__ == "__main__":
     import sys
