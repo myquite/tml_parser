@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="0.1">
+  <xsd:simpleType name="LangCode"><xsd:restriction base="xsd:language"/></xsd:simpleType>
+  <xsd:simpleType name="IsoDuration"><xsd:restriction base="xsd:string">
+    <xsd:pattern value="P(T(\d+H)?(\d+M)?(\d+S)?)?|P(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?"/>
+  </xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="Percent"><xsd:restriction base="xsd:decimal">
+    <xsd:minInclusive value="0"/><xsd:maxInclusive value="100"/>
+  </xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="Level"><xsd:restriction base="xsd:string">
+    <xsd:enumeration value="beginner"/><xsd:enumeration value="intermediate"/>
+    <xsd:enumeration value="advanced"/><xsd:enumeration value="mixed"/>
+  </xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="ContentFormat"><xsd:restriction base="xsd:string">
+    <xsd:enumeration value="markdown"/><xsd:enumeration value="html"/><xsd:enumeration value="text"/>
+  </xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="ActivityType"><xsd:restriction base="xsd:string">
+    <xsd:enumeration value="coding"/><xsd:enumeration value="project"/>
+    <xsd:enumeration value="reflection"/><xsd:enumeration value="lab"/><xsd:enumeration value="reading"/>
+  </xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="AssessmentType"><xsd:restriction base="xsd:string">
+    <xsd:enumeration value="quiz"/><xsd:enumeration value="coding"/><xsd:enumeration value="scenario"/>
+  </xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="QuestionType"><xsd:restriction base="xsd:string">
+    <xsd:enumeration value="mcq"/><xsd:enumeration value="msq"/>
+    <xsd:enumeration value="truefalse"/><xsd:enumeration value="short"/>
+    <xsd:enumeration value="long"/><xsd:enumeration value="code"/>
+    <xsd:enumeration value="matching"/><xsd:enumeration value="ordering"/>
+  </xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="Visibility"><xsd:restriction base="xsd:string">
+    <xsd:enumeration value="public"/><xsd:enumeration value="private"/>
+    <xsd:enumeration value="locked"/><xsd:enumeration value="beta"/>
+  </xsd:restriction></xsd:simpleType>
+
+  <xsd:element name="course" type="Course"/>
+
+  <xsd:complexType name="Course"><xsd:sequence>
+      <xsd:element name="meta" type="Meta" minOccurs="0"/>
+      <xsd:element name="prereq" type="Prereq" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="objective" type="Objective" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="module" type="Module" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="resource" type="Resource" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="badge" type="Badge" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="grading" type="Grading" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="title" type="xsd:string" use="required"/>
+    <xsd:attribute name="level" type="Level" use="optional"/>
+    <xsd:attribute name="duration" type="IsoDuration" use="optional"/>
+    <xsd:attribute name="version" type="xsd:string" use="optional"/>
+    <xsd:attribute name="lang" type="LangCode" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Meta"><xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="author" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="tag" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence></xsd:complexType>
+
+  <xsd:complexType name="Prereq"><xsd:simpleContent>
+    <xsd:extension base="xsd:string"><xsd:attribute name="ref" type="xsd:IDREF" use="required"/></xsd:extension>
+  </xsd:simpleContent></xsd:complexType>
+
+  <xsd:complexType name="Objective"><xsd:simpleContent>
+    <xsd:extension base="xsd:string"><xsd:attribute name="level" type="Level" use="optional"/></xsd:extension>
+  </xsd:simpleContent></xsd:complexType>
+
+  <xsd:complexType name="Module"><xsd:sequence>
+      <xsd:element name="prereq" type="Prereq" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="objective" type="Objective" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="lesson" type="Lesson" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+    <xsd:attribute name="title" type="xsd:string" use="required"/>
+    <xsd:attribute name="order" type="xsd:integer" use="optional"/>
+    <xsd:attribute name="duration" type="IsoDuration" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Lesson"><xsd:sequence>
+      <xsd:element name="prereq" type="Prereq" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="objective" type="Objective" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="content" type="Content" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="activity" type="Activity" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="assessment" type="Assessment" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="discussion" type="Discussion" minOccurs="0"/>
+      <xsd:element name="resource" type="Resource" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+    <xsd:attribute name="title" type="xsd:string" use="required"/>
+    <xsd:attribute name="order" type="xsd:integer" use="optional"/>
+    <xsd:attribute name="duration" type="IsoDuration" use="optional"/>
+    <xsd:attribute name="visibility" type="Visibility" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Content" mixed="true">
+    <xsd:attribute name="format" type="ContentFormat" use="optional"/>
+    <xsd:attribute name="lang" type="LangCode" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Activity"><xsd:sequence>
+      <xsd:element name="instructions" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="input" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="expected" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="rubric" type="Rubric" minOccurs="0"/>
+      <xsd:element name="branch" type="Branch" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+    <xsd:attribute name="type" type="ActivityType" use="required"/>
+    <xsd:attribute name="tool" type="xsd:string" use="optional"/>
+    <xsd:attribute name="est" type="IsoDuration" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Branch">
+    <xsd:attribute name="condition" type="xsd:string" use="required"/>
+    <xsd:attribute name="to" type="xsd:IDREF" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Assessment"><xsd:sequence>
+      <xsd:element name="question" type="Question" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="resultMap" type="ResultMap" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+    <xsd:attribute name="type" type="AssessmentType" use="required"/>
+    <xsd:attribute name="attempts" type="xsd:integer" use="optional"/>
+    <xsd:attribute name="passScore" type="Percent" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Question"><xsd:sequence>
+      <xsd:choice>
+        <xsd:sequence><xsd:element name="stem" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="choice" type="Choice" minOccurs="2" maxOccurs="unbounded"/></xsd:sequence>
+        <xsd:sequence><xsd:element name="statement" type="xsd:string"/>
+          <xsd:element name="answer" type="TFAnswer"/></xsd:sequence>
+        <xsd:sequence><xsd:element name="prompt" type="xsd:string"/>
+          <xsd:element name="solution" type="xsd:string" minOccurs="0"/></xsd:sequence>
+        <xsd:sequence><xsd:element name="prompt" type="xsd:string"/>
+          <xsd:element name="lang" type="xsd:string"/>
+          <xsd:element name="starter" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="tests" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="solution" type="xsd:string" minOccurs="0"/></xsd:sequence>
+        <xsd:sequence><xsd:element name="pair" type="Pair" minOccurs="1" maxOccurs="unbounded"/></xsd:sequence>
+        <xsd:sequence><xsd:element name="item" type="xsd:string" minOccurs="2" maxOccurs="unbounded"/></xsd:sequence>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+    <xsd:attribute name="type" type="QuestionType" use="required"/>
+    <xsd:attribute name="points" type="xsd:decimal" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Choice"><xsd:simpleContent>
+    <xsd:extension base="xsd:string"><xsd:attribute name="correct" type="xsd:boolean" use="optional"/></xsd:extension>
+  </xsd:simpleContent></xsd:complexType>
+
+  <xsd:complexType name="TFAnswer"><xsd:simpleContent>
+    <xsd:extension base="xsd:string"><xsd:attribute name="value" use="required">
+      <xsd:simpleType><xsd:restriction base="xsd:string">
+        <xsd:enumeration value="true"/><xsd:enumeration value="false"/>
+      </xsd:restriction></xsd:simpleType>
+    </xsd:attribute></xsd:extension>
+  </xsd:simpleContent></xsd:complexType>
+
+  <xsd:complexType name="Pair"><xsd:sequence>
+    <xsd:element name="left" type="xsd:string"/><xsd:element name="right" type="xsd:string"/>
+  </xsd:sequence></xsd:complexType>
+
+  <xsd:complexType name="Rubric"><xsd:sequence>
+    <xsd:element name="criterion" type="Criterion" minOccurs="1" maxOccurs="unbounded"/>
+  </xsd:sequence>
+  <xsd:attribute name="scale" use="optional">
+    <xsd:simpleType><xsd:restriction base="xsd:string">
+      <xsd:enumeration value="binary"/><xsd:enumeration value="points"/><xsd:enumeration value="levels"/>
+    </xsd:restriction></xsd:simpleType>
+  </xsd:attribute></xsd:complexType>
+
+  <xsd:complexType name="Criterion"><xsd:sequence>
+    <xsd:element name="desc" type="xsd:string"/>
+  </xsd:sequence>
+  <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+  <xsd:attribute name="points" type="xsd:decimal" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ResultMap"><xsd:sequence>
+    <xsd:element name="outcome" type="Outcome" minOccurs="1" maxOccurs="unbounded"/>
+  </xsd:sequence></xsd:complexType>
+
+  <xsd:complexType name="Outcome"><xsd:simpleContent>
+    <xsd:extension base="xsd:string">
+      <xsd:attribute name="min" type="Percent" use="required"/>
+      <xsd:attribute name="max" type="Percent" use="required"/>
+      <xsd:attribute name="action" use="required">
+        <xsd:simpleType><xsd:restriction base="xsd:string">
+          <xsd:enumeration value="pass"/><xsd:enumeration value="review"/>
+          <xsd:enumeration value="fail"/><xsd:enumeration value="branch"/>
+        </xsd:restriction></xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="branchRef" type="xsd:IDREF" use="optional"/>
+    </xsd:extension>
+  </xsd:simpleContent></xsd:complexType>
+
+  <xsd:complexType name="Discussion"><xsd:sequence>
+    <xsd:element name="prompt" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+  <xsd:attribute name="mode" use="optional">
+    <xsd:simpleType><xsd:restriction base="xsd:string">
+      <xsd:enumeration value="forum"/><xsd:enumeration value="chat"/><xsd:enumeration value="reflect"/>
+    </xsd:restriction></xsd:simpleType>
+  </xsd:attribute></xsd:complexType>
+
+  <xsd:complexType name="Resource"><xsd:sequence>
+    <xsd:element name="title" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+  <xsd:attribute name="type" use="optional">
+    <xsd:simpleType><xsd:restriction base="xsd:string">
+      <xsd:enumeration value="link"/><xsd:enumeration value="pdf"/><xsd:enumeration value="video"/>
+      <xsd:enumeration value="image"/><xsd:enumeration value="dataset"/><xsd:enumeration value="slides"/>
+    </xsd:restriction></xsd:simpleType>
+  </xsd:attribute>
+  <xsd:attribute name="href" type="xsd:anyURI" use="required"/>
+  <xsd:attribute name="lang" type="LangCode" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Badge"><xsd:sequence>
+    <xsd:element name="desc" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="id" type="xsd:ID" use="required"/>
+  <xsd:attribute name="name" type="xsd:string" use="required"/>
+  <xsd:attribute name="trigger" use="required">
+    <xsd:simpleType><xsd:restriction base="xsd:string">
+      <xsd:enumeration value="completeLesson"/><xsd:enumeration value="completeModule"/>
+      <xsd:enumeration value="scoreAtLeast"/>
+    </xsd:restriction></xsd:simpleType>
+  </xsd:attribute>
+  <xsd:attribute name="threshold" type="Percent" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Grading"><xsd:sequence>
+    <xsd:element name="weight" type="Weight" minOccurs="1" maxOccurs="unbounded"/>
+  </xsd:sequence>
+  <xsd:attribute name="scheme" use="optional">
+    <xsd:simpleType><xsd:restriction base="xsd:string">
+      <xsd:enumeration value="points"/><xsd:enumeration value="weighted"/>
+    </xsd:restriction></xsd:simpleType>
+  </xsd:attribute>
+  <xsd:attribute name="passing" type="Percent" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Weight">
+    <xsd:attribute name="type" use="required">
+      <xsd:simpleType><xsd:restriction base="xsd:string">
+        <xsd:enumeration value="lesson"/><xsd:enumeration value="activity"/>
+        <xsd:enumeration value="assessment"/><xsd:enumeration value="module"/>
+      </xsd:restriction></xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="ref" type="xsd:IDREF" use="optional"/>
+    <xsd:attribute name="percent" type="Percent" use="required"/>
+  </xsd:complexType>
+</xsd:schema>

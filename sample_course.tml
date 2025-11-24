@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<course id="js-fundamentals" title="JavaScript Fundamentals" level="beginner" duration="P6W" lang="en">
+  <objective>Understand ES6 basics</objective>
+  <objective>Build 3 small projects</objective>
+
+  <module id="mod-1" title="Getting Started" order="1">
+    <lesson id="les-1" title="Variables and Data Types" order="1" duration="PT40M">
+      <content format="markdown">
+        ## What are Variables?
+        Variables store data values.
+
+        ### Types
+        - string
+        - number
+        - boolean
+        - object
+        - undefined
+
+        **Task:** Create five variables using `let` or `const`.
+      </content>
+
+      <activity id="act-1" type="coding" est="PT20M">
+        <instructions>Create 5 variables of different types.</instructions>
+        <expected>Five declarations using let/const.</expected>
+      </activity>
+
+      <assessment id="quiz-1" type="quiz" passScore="70">
+        <question type="mcq" points="1">
+          <stem>Which declares a block-scoped variable?</stem>
+          <choice correct="true">let</choice>
+          <choice>var</choice>
+          <choice>false</choice>
+        </question>
+        <question type="truefalse" points="1">
+          <statement>`const` variables cannot be reassigned.</statement>
+          <answer value="true"/>
+        </question>
+      </assessment>
+    </lesson>
+  </module>
+</course>

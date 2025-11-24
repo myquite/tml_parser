@@ -1,0 +1,64 @@
+<script>
+const storeKey = (courseId) => `tml-progress::${courseId}`;
+function getProgress(courseId){
+  const raw = localStorage.getItem(storeKey(courseId));
+  return raw ? JSON.parse(raw) : {completedLessons: {}, scores: {}};
+}
+function setProgress(courseId, data){
+  localStorage.setItem(storeKey(courseId), JSON.stringify(data));
+}
+function markLessonComplete(courseId, lessonId){
+  const p = getProgress(courseId);
+  p.completedLessons[lessonId] = true;
+  setProgress(courseId, p);
+  updateProgressBar(courseId);
+}
+function saveScore(courseId, assessId, score){
+  const p = getProgress(courseId);
+  p.scores[assessId] = Math.max(p.scores[assessId]||0, score);
+  setProgress(courseId, p);
+  updateProgressBar(courseId);
+}
+function updateProgressBar(courseId){
+  const p = getProgress(courseId);
+  const total = parseInt(document.body.dataset.totalLessons || "0");
+  const done = Object.keys(p.completedLessons).length;
+  const pct = total>0 ? Math.round((done/total)*100) : 0;
+  const el = document.querySelector('.progress > span');
+  if(el){ el.style.width = pct + '%'; }
+  const label = document.getElementById('progress-label');
+  if(label){ label.textContent = pct + '% complete'; }
+}
+function checkQuiz(courseId, assessId){
+  const assessEl = document.querySelector(`[data-assessment='${assessId}']`);
+  let total=0, correct=0;
+  assessEl.querySelectorAll('.q').forEach((q)=>{
+    total++;
+    const type = q.dataset.type;
+    if(type==='mcq'){
+      const chosen = q.querySelector('input[type=radio]:checked');
+      if(!chosen) return;
+      if(chosen.value === 'true') correct++;
+    }else if(type==='msq'){
+      let ok=true, any=false;
+      q.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+        any = any || cb.checked;
+        if((cb.value==='true') !== cb.checked){ ok=false; }
+      });
+      if(any && ok) correct++;
+    }else if(type==='truefalse'){
+      const chosen = q.querySelector('input[type=radio]:checked');
+      if(chosen && chosen.value === q.dataset.answer) correct++;
+    }
+  });
+  const score = Math.round((correct/Math.max(total,1))*100);
+  saveScore(courseId, assessId, score);
+  const out = assessEl.querySelector('.quiz-result');
+  if(out){ out.textContent = `Score: ${score}% (${correct}/${Math.max(total,1)})`; }
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const cid = document.body.dataset.courseId;
+  updateProgressBar(cid);
+});
+</script>
+

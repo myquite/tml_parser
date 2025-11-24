@@ -1,0 +1,8 @@
+<div class="card quiz" data-assessment="{{ assess_id }}">
+  <h3>Assessment</h3>
+  {{ questions }}
+  <button class="btn" onclick="checkQuiz('{{ course_id }}','{{ assess_id }}')">Check Answers</button>
+  <div class="quiz-result small" style="margin-top:.5rem;"></div>
+  <div class="small">Passing score: {{ pass_score }}%</div>
+</div>
+
