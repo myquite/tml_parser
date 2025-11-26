@@ -117,82 +117,6 @@ def safe_filename(name: str) -> str:
 def mini_markdown(md: str) -> str:
     """Legacy function - use safe_markdown for new code."""
     return safe_markdown(md)
-    import re
-    md = md.strip()
-    
-    # First, extract and replace code blocks (```...```)
-    code_blocks = []
-    code_block_placeholder = "___CODE_BLOCK_{}___"
-    
-    def replace_code_block(match):
-        idx = len(code_blocks)
-        lang = match.group(1) or ""
-        code = match.group(2)
-        code_blocks.append((lang, code))
-        return code_block_placeholder.format(idx)
-    
-    # Match code blocks: ```lang\ncode\n```
-    md = re.sub(r"```(\w+)?\n(.*?)```", replace_code_block, md, flags=re.DOTALL)
-    
-    # Now handle inline formatting
-    md = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", md)
-    md = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", md)
-    
-    # Process lines
-    lines, out = [], []
-    in_code_block = False
-    current_code = []
-    
-    for line in md.splitlines():
-        s = line.strip()
-        
-        # Check if this line is a code block placeholder
-        code_match = re.match(r"___CODE_BLOCK_(\d+)___", s)
-        if code_match:
-            idx = int(code_match.group(1))
-            lang, code = code_blocks[idx]
-            # Add code block
-            code_html = f'<pre><code class="language-{lang}">{code.strip()}</code></pre>'
-            lines.append(code_html)
-            continue
-        
-        if s.startswith("### "): 
-            lines.append(f"<h3>{s[4:]}</h3>")
-        elif s.startswith("## "): 
-            lines.append(f"<h2>{s[3:]}</h2>")
-        elif s.startswith("# "):  
-            lines.append(f"<h1>{s[2:]}</h1>")
-        elif s.startswith("- "):  
-            lines.append(f"<li>{s[2:]}</li>")
-        else:
-            lines.append("" if s=="" else f"<p>{s}</p>")
-    
-    # Handle inline code (single backticks) - do this after processing lines
-    processed_lines = []
-    for line in lines:
-        # Only process inline code in paragraph tags, not in code blocks
-        if line.startswith("<p>") or line.startswith("<li>") or line.startswith("<h"):
-            # Replace inline code
-            line = re.sub(r"`([^`]+)`", r'<code>\1</code>', line)
-        processed_lines.append(line)
-    
-    # Build output with list handling
-    in_ul = False
-    for l in processed_lines:
-        if l.startswith("<li>"):
-            if not in_ul: 
-                out.append("<ul>")
-                in_ul = True
-            out.append(l)
-        else:
-            if in_ul: 
-                out.append("</ul>")
-                in_ul = False
-            out.append(l)
-    if in_ul: 
-        out.append("</ul>")
-    
-    return "\n".join(out)
 
 
 class TContent:
@@ -249,7 +173,74 @@ def get_required_attr(element, attr_name, element_name=None, element_id=None):
         )
     return value
 
-def parse_tml(path: str) -> TCourse:
+def validate_tml_xsd(tml_path: str, xsd_path: str = None):
+    """
+    Validate TML file against XSD schema.
+    
+    Args:
+        tml_path: Path to TML file
+        xsd_path: Path to XSD schema file. If None, looks for tml-v0.1.xsd in same directory.
+    
+    Returns:
+        Tuple of (is_valid, error_message)
+        If lxml is not available, returns (True, "XSD validation skipped (lxml not installed)")
+    """
+    try:
+        from lxml import etree
+    except ImportError:
+        return (True, "XSD validation skipped (lxml not installed - install with: pip install lxml)")
+    
+    # Find XSD file
+    if xsd_path is None:
+        tml_dir = os.path.dirname(os.path.abspath(tml_path))
+        xsd_path = os.path.join(tml_dir, 'tml-v0.1.xsd')
+        # Also try in current directory
+        if not os.path.exists(xsd_path):
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            xsd_path = os.path.join(script_dir, 'tml-v0.1.xsd')
+    
+    if not os.path.exists(xsd_path):
+        return (True, f"XSD validation skipped (schema file not found: {xsd_path})")
+    
+    try:
+        # Parse and validate
+        xmlschema_doc = etree.parse(xsd_path)
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+        
+        xml_doc = etree.parse(tml_path)
+        xmlschema.assertValid(xml_doc)
+        return (True, "XSD validation passed")
+    except etree.XMLSchemaParseError as e:
+        return (False, f"XSD schema error: {e}")
+    except etree.DocumentInvalid as e:
+        return (False, f"TML file does not match schema: {e}")
+    except etree.XMLSyntaxError as e:
+        return (False, f"XML syntax error: {e}")
+    except Exception as e:
+        return (False, f"Validation error: {e}")
+
+def parse_tml(path: str, validate: bool = True) -> TCourse:
+    """
+    Parse TML file and return TCourse object.
+    
+    Args:
+        path: Path to TML file
+        validate: If True, validate against XSD schema before parsing
+    
+    Returns:
+        TCourse object
+    
+    Raises:
+        TMLParseError: If validation fails or parsing encounters errors
+    """
+    # Validate against XSD schema if requested
+    if validate:
+        is_valid, message = validate_tml_xsd(path)
+        if not is_valid:
+            raise TMLParseError(f"XSD validation failed: {message}")
+        # Log validation success (optional, can be removed)
+        # print(f"✓ {message}", file=sys.stderr)
+    
     tree = ET.parse(path)
     root = tree.getroot()
     cid = root.attrib.get("id")
@@ -531,14 +522,15 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             inputs = []
                             input_type = "radio" if q.type == "mcq" else "checkbox"
                             for j, ch in enumerate(q.data["choices"], start=1):
-                                inputs.append(f"""<label><input type="{input_type}" name="{name}" value="{str(ch['correct']).lower()}"> {ch['text']}</label>""")
-                            choices_html = "<br>".join(inputs)
+                                inputs.append(f"""<label><input type="{input_type}" name="{name}" value="{str(ch['correct']).lower()}"> {escape_html(ch['text'])}</label>""")
+                            # Join choices without <br> - CSS flexbox will handle spacing
+                            choices_html = "\n".join(inputs)
                             question_html = engine.render_with_defaults(
                                 'partials/question.html',
                                 {
                                     'q_type': q.type,
                                     'q_index': str(idx),
-                                    'stem': stem,
+                                    'stem': escape_html(stem),
                                     'choices': choices_html
                                 }
                             )
@@ -548,13 +540,13 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             stmt = q.data["statement"]
                             ans = q.data["answer"]
                             choices_html = f"""<label><input type="radio" name="{name}" value="true"> True</label>
-  <label><input type="radio" name="{name}" value="false"> False</label>"""
+<label><input type="radio" name="{name}" value="false"> False</label>"""
                             question_html = engine.render_with_defaults(
                                 'partials/question.html',
                                 {
                                     'q_type': 'truefalse',
                                     'q_index': str(idx),
-                                    'stem': stmt,
+                                    'stem': escape_html(stmt),
                                     'choices': choices_html
                                 }
                             )
@@ -656,10 +648,19 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
             with open(fname, "w", encoding="utf-8") as f:
                 f.write(lesson_html)
 
-def build(tml_path: str, outdir: str, template_dir: str = None):
+def build(tml_path: str, outdir: str, template_dir: str = None, validate: bool = True):
+    """
+    Build static site from TML file.
+    
+    Args:
+        tml_path: Path to TML course file
+        outdir: Output directory for generated HTML
+        template_dir: Optional custom template directory
+        validate: If True, validate TML against XSD schema before parsing
+    """
     import sys
     try:
-        course = parse_tml(tml_path)
+        course = parse_tml(tml_path, validate=validate)
         render_course(course, outdir, template_dir)
     except TMLParseError as e:
         print(f"Error parsing TML file: {e}", file=sys.stderr)

@@ -25,12 +25,25 @@ A simple parser for TML (Teaching Markup Language) v0.1 that generates static HT
 ## Usage
 
 ```bash
-python3 tml_to_site.py <input.tml> <output_dir> [template_dir]
+python3 tml_to_site.py <input.tml> <output_dir> [template_dir] [--no-validate]
 ```
 
 - `input.tml` - Path to your TML course file
 - `output_dir` - Directory where HTML files will be generated
 - `template_dir` - (Optional) Custom template directory. Defaults to `templates/` if it exists
+- `--no-validate` - (Optional) Skip XSD schema validation
+
+### XSD Schema Validation
+
+By default, the parser validates TML files against `tml-v0.1.xsd` before parsing. This catches structural errors early:
+
+- **With lxml installed**: Full XSD validation is performed
+- **Without lxml**: Validation is skipped with a warning message
+
+To enable full validation, install lxml:
+```bash
+pip install lxml
+```
 
 ## Customization
 
@@ -62,7 +75,8 @@ See `templates/README.md` for detailed template documentation.
 
 ## Requirements
 
-- Python 3.6+ (uses only standard library)
+- Python 3.8+ (uses only standard library)
+- **Optional**: `lxml` for XSD schema validation (install with `pip install lxml`)
 
 ## License
 

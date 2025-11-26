@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Example TML Course: "Introduction to Web Development"
+  
+  This file demonstrates the TML v0.1 schema structure with:
+  - Course metadata and objectives
+  - Prerequisites
+  - Modules and lessons
+  - Multiple content formats (markdown, html, text)
+  - Various activity types (coding, reading, reflection, project, lab)
+  - Different assessment types (quiz, coding)
+  - Resources and badges
+  - Grading scheme
+  
+  Duration format: ISO 8601 (e.g., P6W = 6 weeks, PT45M = 45 minutes)
+  Level: beginner | intermediate | advanced | mixed
+-->
+<course id="web-dev-intro" 
+        title="Introduction to Web Development" 
+        level="beginner" 
+        duration="P8W" 
+        version="1.0" 
+        lang="en">
+  
+  <!-- Course Metadata -->
+  <meta>
+    <description>Learn the fundamentals of web development including HTML, CSS, and JavaScript. Perfect for beginners with no prior programming experience.</description>
+    <author>Jane Smith</author>
+    <author>John Doe</author>
+    <tag>web-development</tag>
+    <tag>html</tag>
+    <tag>css</tag>
+    <tag>javascript</tag>
+    <tag>beginner-friendly</tag>
+  </meta>
+  
+  <!-- Prerequisites (references to other courses) -->
+  <prereq ref="computer-basics">Basic computer skills</prereq>
+  
+  <!-- Course Objectives -->
+  <objective level="beginner">Understand the structure of HTML documents</objective>
+  <objective level="beginner">Style web pages using CSS</objective>
+  <objective level="intermediate">Add interactivity with JavaScript</objective>
+  <objective level="beginner">Build a complete web page from scratch</objective>
+  
+  <!-- Module 1: HTML Fundamentals -->
+  <module id="html-basics" title="HTML Fundamentals" order="1" duration="P2W">
+    
+    <objective>Create well-structured HTML documents</objective>
+    <objective>Use semantic HTML elements</objective>
+    
+    <!-- Lesson 1: HTML Structure -->
+    <lesson id="html-structure" title="HTML Document Structure" order="1" duration="PT30M">
+      
+      <!-- Content Slide 1: Introduction -->
+      <content format="markdown">
+        ## What is HTML?
+        
+        HTML (HyperText Markup Language) is the standard markup language for creating web pages.
+        
+        ### Key Concepts:
+        - HTML describes the **structure** of a web page
+        - HTML elements are represented by **tags**
+        - Tags usually come in pairs: opening and closing
+        
+        ### Basic Structure:
+        ```html
+        &lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+          &lt;head&gt;
+            &lt;title&gt;My Page&lt;/title&gt;
+          &lt;/head&gt;
+          &lt;body&gt;
+            &lt;h1&gt;Hello World!&lt;/h1&gt;
+          &lt;/body&gt;
+        &lt;/html&gt;
+        ```
+      </content>
+      
+      <!-- Content Slide 2: Common Elements -->
+      <content format="markdown">
+        ## Common HTML Elements
+        
+        Here are some essential HTML elements you'll use frequently:
+        
+        - **Headings**: `&lt;h1&gt;` through `&lt;h6&gt;`
+        - **Paragraphs**: `&lt;p&gt;`
+        - **Links**: `&lt;a href="..."&gt;`
+        - **Images**: `&lt;img src="..." alt="..."&gt;`
+        - **Lists**: `&lt;ul&gt;`, `&lt;ol&gt;`, `&lt;li&gt;`
+        - **Divisions**: `&lt;div&gt;` and semantic elements like `&lt;header&gt;`, `&lt;nav&gt;`, `&lt;main&gt;`
+      </content>
+      
+      <!-- Reading Activity: Worked Example -->
+      <activity id="html-example-1" type="reading" est="PT10M">
+        <instructions>Review this example HTML document and understand its structure.</instructions>
+        <expected format="markdown">
+          ## Example: Personal Portfolio Page
+          
+          Here's a complete HTML document for a personal portfolio:
+          
+          ```html
+          &lt;!DOCTYPE html&gt;
+          &lt;html lang="en"&gt;
+          &lt;head&gt;
+            &lt;meta charset="UTF-8"&gt;
+            &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+            &lt;title&gt;Jane Doe - Web Developer&lt;/title&gt;
+          &lt;/head&gt;
+          &lt;body&gt;
+            &lt;header&gt;
+              &lt;h1&gt;Jane Doe&lt;/h1&gt;
+              &lt;nav&gt;
+                &lt;a href="#about"&gt;About&lt;/a&gt;
+                &lt;a href="#projects"&gt;Projects&lt;/a&gt;
+                &lt;a href="#contact"&gt;Contact&lt;/a&gt;
+              &lt;/nav&gt;
+            &lt;/header&gt;
+            &lt;main&gt;
+              &lt;section id="about"&gt;
+                &lt;h2&gt;About Me&lt;/h2&gt;
+                &lt;p&gt;I'm a passionate web developer...&lt;/p&gt;
+              &lt;/section&gt;
+            &lt;/main&gt;
+            &lt;footer&gt;
+              &lt;p&gt;&amp;copy; 2024 Jane Doe&lt;/p&gt;
+            &lt;/footer&gt;
+          &lt;/body&gt;
+          &lt;/html&gt;
+          ```
+          
+          **Key Takeaways:**
+          - Notice the semantic HTML5 elements (`&lt;header&gt;`, `&lt;nav&gt;`, `&lt;main&gt;`, `&lt;section&gt;`, `&lt;footer&gt;`)
+          - All content is properly nested
+          - The document has a clear structure
+        </expected>
+      </activity>
+      
+      <!-- Coding Activity -->
+      <activity id="html-practice-1" type="coding" est="PT15M">
+        <instructions>Create an HTML document with the following structure:
+        
+        1. A header with your name as an h1
+        2. A navigation section with links to "Home", "About", and "Contact"
+        3. A main section with an h2 heading "Welcome" and a paragraph introducing yourself
+        4. A footer with copyright information
+        
+        Use semantic HTML5 elements where appropriate.</instructions>
+        <expected>Your HTML should include proper DOCTYPE, html, head, and body tags. Use semantic elements like &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, and &lt;footer&gt;.</expected>
+      </activity>
+      
+      <!-- Assessment: Quiz -->
+      <assessment id="html-quiz-1" type="quiz" passScore="70" attempts="3">
+        
+        <!-- Multiple Choice Question -->
+        <question id="q1" type="mcq" points="10">
+          <stem>What does HTML stand for?</stem>
+          <choice correct="true">HyperText Markup Language</choice>
+          <choice>High-Level Text Markup Language</choice>
+          <choice>Hyperlink and Text Markup Language</choice>
+          <choice>Home Tool Markup Language</choice>
+        </question>
+        
+        <!-- Multiple Select Question -->
+        <question id="q2" type="msq" points="15">
+          <stem>Which of the following are semantic HTML5 elements? (Select all that apply)</stem>
+          <choice correct="true">&lt;header&gt;</choice>
+          <choice correct="true">&lt;nav&gt;</choice>
+          <choice>&lt;div&gt;</choice>
+          <choice correct="true">&lt;footer&gt;</choice>
+          <choice>&lt;span&gt;</choice>
+        </question>
+        
+        <!-- True/False Question -->
+        <question id="q3" type="truefalse" points="10">
+          <statement>All HTML tags must have a closing tag.</statement>
+          <answer value="false"/>
+        </question>
+        
+        <!-- Short Answer Question -->
+        <question id="q4" type="short" points="20">
+          <prompt>What is the purpose of the &lt;meta charset="UTF-8"&gt; tag in the HTML head?</prompt>
+          <solution>It specifies the character encoding for the document, ensuring that special characters and international text display correctly.</solution>
+        </question>
+        
+      </assessment>
+      
+      <!-- Resources -->
+      <resource id="html-spec" type="link" href="https://html.spec.whatwg.org/" lang="en">
+        <title>HTML Living Standard</title>
+      </resource>
+      
+      <resource id="mdn-html" type="link" href="https://developer.mozilla.org/en-US/docs/Web/HTML" lang="en">
+        <title>MDN HTML Documentation</title>
+      </resource>
+      
+    </lesson>
+    
+    <!-- Lesson 2: Forms and Input -->
+    <lesson id="html-forms" title="HTML Forms and Input Elements" order="2" duration="PT45M">
+      
+      <content format="markdown">
+        ## HTML Forms
+        
+        Forms allow users to input and submit data. The `&lt;form&gt;` element contains form controls.
+        
+        ### Common Input Types:
+        - `text` - Single-line text input
+        - `email` - Email address
+        - `password` - Password field (masked)
+        - `checkbox` - Checkbox
+        - `radio` - Radio button
+        - `submit` - Submit button
+      </content>
+      
+      <!-- Reflection Activity -->
+      <activity id="form-reflection" type="reflection" est="PT10M">
+        <instructions>Think about a website you use regularly. What forms does it have? What information does it collect? Write a brief reflection on the user experience of filling out those forms.</instructions>
+      </activity>
+      
+      <!-- Lab Activity -->
+      <activity id="form-lab" type="lab" est="PT20M">
+        <instructions>Create a contact form with the following fields:
+        
+        1. Name (text input, required)
+        2. Email (email input, required)
+        3. Subject (text input)
+        4. Message (textarea, required)
+        5. Subscribe to newsletter (checkbox)
+        6. Submit button
+        
+        Use appropriate input types and add the `required` attribute where needed.</instructions>
+        <expected>Your form should include proper labels, use semantic HTML, and have appropriate input types for each field.</expected>
+      </activity>
+      
+    </lesson>
+    
+  </module>
+  
+  <!-- Module 2: CSS Styling -->
+  <module id="css-basics" title="CSS Fundamentals" order="2" duration="P2W">
+    
+    <prereq ref="html-basics">HTML Fundamentals</prereq>
+    
+    <objective>Style HTML elements using CSS</objective>
+    <objective>Understand CSS selectors and specificity</objective>
+    <objective>Create responsive layouts</objective>
+    
+    <!-- Lesson 1: CSS Introduction -->
+    <lesson id="css-intro" title="Introduction to CSS" order="1" duration="PT40M">
+      
+      <content format="markdown">
+        ## What is CSS?
+        
+        CSS (Cascading Style Sheets) is used to style and layout web pages.
+        
+        ### Three Ways to Add CSS:
+        
+        1. **Inline styles**: `&lt;div style="color: red;"&gt;`
+        2. **Internal stylesheet**: `&lt;style&gt;` tag in the `&lt;head&gt;`
+        3. **External stylesheet**: Link to a `.css` file
+        
+        ### Basic Syntax:
+        ```css
+        selector {
+          property: value;
+        }
+        ```
+      </content>
+      
+      <!-- Project Activity -->
+      <activity id="css-project-1" type="project" est="PT2H">
+        <instructions>Create a personal portfolio website with:
+        
+        - A header with navigation
+        - A hero section with your name and a tagline
+        - A projects section showcasing 3 projects
+        - A contact section with a form
+        - Responsive design that works on mobile and desktop
+        
+        Use external CSS for all styling. Focus on:
+        - Typography (fonts, sizes, spacing)
+        - Colors and backgrounds
+        - Layout using flexbox or grid
+        - Hover effects and transitions</instructions>
+        <expected>Your portfolio should demonstrate understanding of CSS selectors, the box model, and layout techniques. Code should be well-organized and commented.</expected>
+        <rubric scale="points">
+          <criterion id="c1" points="25">HTML structure is semantic and well-organized</criterion>
+          <criterion id="c2" points="30">CSS styling is consistent and visually appealing</criterion>
+          <criterion id="c3" points="25">Layout is responsive and works on different screen sizes</criterion>
+          <criterion id="c4" points="20">Code is clean, commented, and follows best practices</criterion>
+        </rubric>
+      </activity>
+      
+      <!-- Assessment: Coding Challenge -->
+      <assessment id="css-assessment" type="coding" passScore="80" attempts="2">
+        
+        <question id="css-q1" type="code" points="50">
+          <prompt>Write CSS to style a navigation bar with the following requirements:
+          
+          - Background color: #333
+          - Text color: white
+          - Links should be displayed horizontally
+          - Links should have padding of 15px
+          - On hover, links should have a background color of #555
+          - The navigation should be fixed at the top of the page</prompt>
+          <lang>css</lang>
+          <starter>/* Your CSS here */
+nav {
+  
+}</starter>
+          <solution>nav {
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+nav a {
+  color: white;
+  display: inline-block;
+  padding: 15px;
+  text-decoration: none;
+}
+
+nav a:hover {
+  background-color: #555;
+}</solution>
+        </question>
+        
+      </assessment>
+      
+    </lesson>
+    
+  </module>
+  
+  <!-- Module 3: JavaScript Basics -->
+  <module id="js-basics" title="JavaScript Fundamentals" order="3" duration="P3W">
+    
+    <prereq ref="html-basics">HTML Fundamentals</prereq>
+    <prereq ref="css-basics">CSS Fundamentals</prereq>
+    
+    <objective>Write basic JavaScript programs</objective>
+    <objective>Manipulate the DOM</objective>
+    <objective>Handle user events</objective>
+    
+    <!-- Lesson 1: JavaScript Variables -->
+    <lesson id="js-variables" title="Variables and Data Types" order="1" duration="PT45M">
+      
+      <content format="markdown">
+        ## JavaScript Variables
+        
+        Variables store data values. JavaScript has three ways to declare variables:
+        
+        - `let` - Block-scoped, can be reassigned
+        - `const` - Block-scoped, cannot be reassigned
+        - `var` - Function-scoped (avoid in modern code)
+      </content>
+      
+      <!-- Reading Activity: Worked Example -->
+      <activity id="js-example-1" type="reading" est="PT15M">
+        <instructions>Study this example and experiment with the code.</instructions>
+        <expected format="markdown">
+          ## Example: Variable Declarations
+          
+          ```javascript
+          // Using let
+          let age = 25;
+          age = 26; // ✅ Can reassign
+          
+          // Using const
+          const name = "Alice";
+          // name = "Bob"; // ❌ Error! Cannot reassign const
+          
+          // const with objects
+          const person = { name: "Alice", age: 25 };
+          person.age = 26; // ✅ Can modify object properties
+          // person = {}; // ❌ Cannot reassign the variable
+          
+          // Multiple declarations
+          let x = 10, y = 20, z = 30;
+          ```
+          
+          **Key Takeaways:**
+          - Use `const` by default
+          - Use `let` when you need to reassign
+          - Avoid `var` in modern JavaScript
+        </expected>
+      </activity>
+      
+      <!-- Coding Activity -->
+      <activity id="js-practice-1" type="coding" est="PT20M">
+        <instructions>Write JavaScript code to:
+        
+        1. Declare a constant `PI` with value 3.14159
+        2. Declare a variable `radius` with value 5
+        3. Calculate the area of a circle using the formula: area = PI * radius²
+        4. Store the result in a variable called `area`
+        5. Log the result to the console
+        
+        Use appropriate variable declarations (const/let).</instructions>
+        <expected>Your code should use `const` for PI and `let` for variables that might change. The calculation should be correct and use console.log() to display the result.</expected>
+      </activity>
+      
+    </lesson>
+    
+  </module>
+  
+  <!-- Course Resources -->
+  <resource id="w3schools" type="link" href="https://www.w3schools.com/" lang="en">
+    <title>W3Schools - Web Development Tutorials</title>
+  </resource>
+  
+  <resource id="css-tricks" type="link" href="https://css-tricks.com/" lang="en">
+    <title>CSS-Tricks - CSS and Web Design Resources</title>
+  </resource>
+  
+  <resource id="js-info" type="link" href="https://javascript.info/" lang="en">
+    <title>JavaScript.info - Modern JavaScript Tutorial</title>
+  </resource>
+  
+  <!-- Badges -->
+  <badge id="html-master" name="HTML Master" trigger="completeModule" threshold="80">
+    <desc>Earned by completing the HTML Fundamentals module with at least 80% score</desc>
+  </badge>
+  
+  <badge id="css-artist" name="CSS Artist" trigger="completeModule" threshold="85">
+    <desc>Earned by completing the CSS Fundamentals module with at least 85% score</desc>
+  </badge>
+  
+  <badge id="js-ninja" name="JavaScript Ninja" trigger="scoreAtLeast" threshold="90">
+    <desc>Earned by scoring at least 90% on the JavaScript assessment</desc>
+  </badge>
+  
+  <!-- Grading Scheme -->
+  <grading scheme="weighted" passing="70">
+    <weight type="module" ref="html-basics" percent="30"/>
+    <weight type="module" ref="css-basics" percent="35"/>
+    <weight type="module" ref="js-basics" percent="35"/>
+  </grading>
+  
+</course>
+
