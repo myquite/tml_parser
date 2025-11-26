@@ -1,6 +1,6 @@
 # TML Parser & Static Site Generator
 
-A simple parser for TML (Teaching Markup Language) v0.1 that generates static HTML websites from course XML files. No external dependencies required.
+A simple parser for TML (Training Markup Language) v0.1 that generates static HTML websites from course XML files. No external dependencies required.
 
 ## Features
 
