@@ -3,7 +3,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Python-based parser for **TML (Teaching Markup Language) v0.1** that generates beautiful, interactive static HTML websites from course XML files. Perfect for creating online courses, tutorials, and educational content.
+A Python-based parser for **TML (Training Markup Language) v0.1** that generates beautiful, interactive static HTML websites from course XML files. Perfect for creating online courses, tutorials, and educational content.
 
 ## ✨ Features
 
