@@ -1,5 +1,9 @@
-<div class="q" data-type="{{ q_type }}">
-  <div class="stem"><strong>Q{{ q_index }}.</strong> {{ stem }}</div>
+<div class="q" data-type="{{ q_type }}" data-points="{{ q_points }}">
+  <div class="question-meta">
+    <span class="question-type-label">{{ q_type_label }}</span>
+    <span class="question-points-label">{{ q_points }} pts</span>
+  </div>
+  <div class="stem">{{ stem }}</div>
   <div class="choices">{{ choices }}</div>
 </div>
 

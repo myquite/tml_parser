@@ -58,6 +58,13 @@ function updateSlideCounter() {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') previousSlide();
   if (e.key === 'ArrowRight') nextSlide();
+  // Jump to assessment: press 'a' key
+  if (e.key === 'a' || e.key === 'A') {
+    const assessmentSlide = Array.from(slides).findIndex(s => s.querySelector('.assessment-slide'));
+    if (assessmentSlide >= 0) {
+      showSlide(assessmentSlide);
+    }
+  }
 });
 
 // Initialize slides on page load

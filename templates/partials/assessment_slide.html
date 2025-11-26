@@ -1,13 +1,18 @@
 <div class="assessment-slide" data-assessment="{{ assess_id }}">
-  <div class="card">
-    <h2>📝 Assessment</h2>
-    <div class="quiz-content">
+  <div class="assessment-container">
+    <div class="assessment-header">
+      <h2>Assessment</h2>
+      <div class="assessment-info">
+        <span class="passing-score">Passing score: <strong>{{ pass_score }}%</strong></span>
+      </div>
+    </div>
+    <!-- Add .quiz wrapper so .quiz .q styles apply to all questions -->
+    <div class="quiz quiz-content">
       {{ questions }}
     </div>
     <div class="assessment-actions">
-      <button class="btn" onclick="checkQuiz('{{ course_id }}','{{ assess_id }}')">✓ Check Answers</button>
-      <div class="quiz-result small" style="margin-top:1rem;"></div>
-      <div class="small" style="margin-top:0.5rem;color:var(--text-muted);">Passing score: <strong>{{ pass_score }}%</strong></div>
+      <button class="btn btn-primary" onclick="checkQuiz('{{ course_id }}','{{ assess_id }}')">Check Answers</button>
+      <div class="quiz-result"></div>
     </div>
   </div>
 </div>

@@ -541,13 +541,26 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                 for asmt in l.assessments:
                     q_html = []
                     for idx, q in enumerate(asmt.questions, start=1):
+                        points = str(int(q.points)) if q.points == int(q.points) else str(q.points)
+                        type_labels = {
+                            "mcq": "Multiple Choice",
+                            "msq": "Multiple Select",
+                            "truefalse": "True/False",
+                            "short": "Short Answer",
+                            "long": "Long Answer",
+                            "code": "Code",
+                            "matching": "Matching",
+                            "ordering": "Ordering"
+                        }
+                        type_label = type_labels.get(q.type, q.type.upper())
+                        
                         if q.type in ("mcq", "msq"):
                             name = f"{asmt.id}__q{idx}"
                             stem = q.data.get("stem", "")
                             inputs = []
                             input_type = "radio" if q.type == "mcq" else "checkbox"
                             for j, ch in enumerate(q.data["choices"], start=1):
-                                inputs.append(f"""<label><input type="{input_type}" name="{name}" value="{str(ch['correct']).lower()}"> {escape_html(ch['text'])}</label>""")
+                                inputs.append(f"""<label data-option-number="{j}"><input type="{input_type}" name="{name}" value="{str(ch['correct']).lower()}" style="display:none;"> <span style="flex:1;">{escape_html(ch['text'])}</span></label>""")
                             # Join choices without <br> - CSS flexbox will handle spacing
                             choices_html = "\n".join(inputs)
                             question_html = engine.render_with_defaults(
@@ -555,6 +568,8 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                                 {
                                     'q_type': q.type,
                                     'q_index': str(idx),
+                                    'q_points': points,
+                                    'q_type_label': type_label,
                                     'stem': escape_html(stem),
                                     'choices': choices_html
                                 }
@@ -564,13 +579,15 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             name = f"{asmt.id}__q{idx}"
                             stmt = q.data["statement"]
                             ans = q.data["answer"]
-                            choices_html = f"""<label><input type="radio" name="{name}" value="true"> True</label>
-<label><input type="radio" name="{name}" value="false"> False</label>"""
+                            choices_html = f"""<label data-option-number="1"><input type="radio" name="{name}" value="true" style="display:none;"> <span style="flex:1;">True</span></label>
+<label data-option-number="2"><input type="radio" name="{name}" value="false" style="display:none;"> <span style="flex:1;">False</span></label>"""
                             question_html = engine.render_with_defaults(
                                 'partials/question.html',
                                 {
                                     'q_type': 'truefalse',
                                     'q_index': str(idx),
+                                    'q_points': points,
+                                    'q_type_label': type_label,
                                     'stem': escape_html(stmt),
                                     'choices': choices_html
                                 }
@@ -586,12 +603,16 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             prompt = q.data.get("prompt", "")
                             solution = q.data.get("solution", "")
                             solution_attr = f' data-solution="{escape_html(solution)}"' if solution else ""
-                            question_html = f"""<div class="q" data-type="{q.type}" data-question-id="{name}"{solution_attr}>
-  <div class="stem"><strong>Q{idx}.</strong> {escape_html(prompt)}</div>
+                            question_html = f"""<div class="q" data-type="{q.type}" data-question-id="{name}" data-points="{points}"{solution_attr}>
+  <div class="question-meta">
+    <span class="question-type-label">{type_label}</span>
+    <span class="question-points-label">{points} pts</span>
+  </div>
+  <div class="stem">{escape_html(prompt)}</div>
   <div class="answer-input">
     <textarea class="text-answer" name="{name}" rows="{4 if q.type == 'short' else 8}" placeholder="Enter your answer here..."></textarea>
   </div>
-  <div class="solution" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:8px;">
+  <div class="solution" style="display:none;">
     <strong>Solution:</strong> <div class="solution-content">{escape_html(solution)}</div>
   </div>
 </div>"""
@@ -603,12 +624,16 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                             starter = q.data.get("starter", "")
                             solution = q.data.get("solution", "")
                             solution_attr = f' data-solution="{escape_html(solution)}"' if solution else ""
-                            question_html = f"""<div class="q q-code" data-type="code" data-question-id="{name}" data-lang="{escape_html(lang)}"{solution_attr}>
-  <div class="stem"><strong>Q{idx}.</strong> {escape_html(prompt)}</div>
+                            question_html = f"""<div class="q q-code" data-type="code" data-question-id="{name}" data-lang="{escape_html(lang)}" data-points="{points}"{solution_attr}>
+  <div class="question-meta">
+    <span class="question-type-label">{type_label}</span>
+    <span class="question-points-label">{points} pts</span>
+  </div>
+  <div class="stem">{escape_html(prompt)}</div>
   <div class="code-answer">
     <textarea class="code-editor" name="{name}" rows="10" placeholder="Write your code here...">{escape_html(starter)}</textarea>
   </div>
-  <div class="solution" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:8px;">
+  <div class="solution" style="display:none;">
     <strong>Solution:</strong>
     <pre><code class="language-{escape_html(lang)}">{escape_html(solution)}</code></pre>
   </div>
@@ -635,8 +660,13 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
       </select>
     </div>'''
                             matching_html += '</div>'
-                            question_html = f"""<div class="q q-matching" data-type="matching" data-question-id="{name}">
-  <div class="stem"><strong>Q{idx}.</strong> Match each item on the left with the correct item on the right.</div>
+                            question_html = f"""<div class="q q-matching" data-type="matching" data-question-id="{name}" data-points="{points}">
+  <div class="question-meta">
+    <span class="question-number-badge">{idx}</span>
+    <span class="question-type-label">{type_label}</span>
+    <span class="question-points-label">{points} pts</span>
+  </div>
+  <div class="stem">Match each item on the left with the correct item on the right.</div>
   {matching_html}
 </div>"""
                             q_html.append(question_html)
@@ -652,8 +682,13 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
       <span class="ordering-text">{item_text}</span>
     </div>'''
                             ordering_html += '</div>'
-                            question_html = f"""<div class="q q-ordering" data-type="ordering" data-question-id="{name}">
-  <div class="stem"><strong>Q{idx}.</strong> Put the following items in the correct order (1, 2, 3, ...).</div>
+                            question_html = f"""<div class="q q-ordering" data-type="ordering" data-question-id="{name}" data-points="{points}">
+  <div class="question-meta">
+    <span class="question-number-badge">{idx}</span>
+    <span class="question-type-label">{type_label}</span>
+    <span class="question-points-label">{points} pts</span>
+  </div>
+  <div class="stem">Put the following items in the correct order (1, 2, 3, ...).</div>
   {ordering_html}
 </div>"""
                             q_html.append(question_html)
