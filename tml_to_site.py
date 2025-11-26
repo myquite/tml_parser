@@ -302,6 +302,31 @@ def parse_tml(path: str, validate: bool = True) -> TCourse:
                         answer_el = q.find("./answer")
                         answer = (answer_el.attrib.get("value","false").lower() if answer_el is not None else "false")
                         data={"statement":statement,"answer":answer}
+                    elif qtype in ("short", "long"):
+                        prompt = (q.findtext("./prompt") or "").strip()
+                        solution = (q.findtext("./solution") or "").strip()
+                        data={"prompt":prompt,"solution":solution}
+                    elif qtype=="code":
+                        prompt = (q.findtext("./prompt") or "").strip()
+                        lang = (q.findtext("./lang") or "").strip()
+                        starter = (q.findtext("./starter") or "").strip()
+                        tests = (q.findtext("./tests") or "").strip()
+                        solution = (q.findtext("./solution") or "").strip()
+                        data={"prompt":prompt,"lang":lang,"starter":starter,"tests":tests,"solution":solution}
+                    elif qtype=="matching":
+                        pairs=[]
+                        for pair_el in q.findall("./pair"):
+                            left = (pair_el.findtext("./left") or "").strip()
+                            right = (pair_el.findtext("./right") or "").strip()
+                            pairs.append({"left":left,"right":right})
+                        data={"pairs":pairs}
+                    elif qtype=="ordering":
+                        items=[]
+                        for item_el in q.findall("./item"):
+                            item_text = (item_el.text or "").strip()
+                            if item_text:
+                                items.append(item_text)
+                        data={"items":items}
                     else:
                         data={"raw":ET.tostring(q, encoding='unicode')}
                     questions.append(TQuestion(qtype, points, data))
@@ -556,9 +581,85 @@ def render_course(course: TCourse, outdir: str, template_dir: str = None):
                                 f'data-type="truefalse" data-answer="{ans}"'
                             )
                             q_html.append(question_html)
+                        elif q.type in ("short", "long"):
+                            name = f"{asmt.id}__q{idx}"
+                            prompt = q.data.get("prompt", "")
+                            solution = q.data.get("solution", "")
+                            solution_attr = f' data-solution="{escape_html(solution)}"' if solution else ""
+                            question_html = f"""<div class="q" data-type="{q.type}" data-question-id="{name}"{solution_attr}>
+  <div class="stem"><strong>Q{idx}.</strong> {escape_html(prompt)}</div>
+  <div class="answer-input">
+    <textarea class="text-answer" name="{name}" rows="{4 if q.type == 'short' else 8}" placeholder="Enter your answer here..."></textarea>
+  </div>
+  <div class="solution" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:8px;">
+    <strong>Solution:</strong> <div class="solution-content">{escape_html(solution)}</div>
+  </div>
+</div>"""
+                            q_html.append(question_html)
+                        elif q.type == "code":
+                            name = f"{asmt.id}__q{idx}"
+                            prompt = q.data.get("prompt", "")
+                            lang = q.data.get("lang", "javascript")
+                            starter = q.data.get("starter", "")
+                            solution = q.data.get("solution", "")
+                            solution_attr = f' data-solution="{escape_html(solution)}"' if solution else ""
+                            question_html = f"""<div class="q q-code" data-type="code" data-question-id="{name}" data-lang="{escape_html(lang)}"{solution_attr}>
+  <div class="stem"><strong>Q{idx}.</strong> {escape_html(prompt)}</div>
+  <div class="code-answer">
+    <textarea class="code-editor" name="{name}" rows="10" placeholder="Write your code here...">{escape_html(starter)}</textarea>
+  </div>
+  <div class="solution" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:8px;">
+    <strong>Solution:</strong>
+    <pre><code class="language-{escape_html(lang)}">{escape_html(solution)}</code></pre>
+  </div>
+</div>"""
+                            q_html.append(question_html)
+                        elif q.type == "matching":
+                            name = f"{asmt.id}__q{idx}"
+                            pairs = q.data.get("pairs", [])
+                            # Get all right items and shuffle for dropdown options
+                            import random
+                            all_right_items = [p["right"] for p in pairs]
+                            shuffled_rights = all_right_items.copy()
+                            random.shuffle(shuffled_rights)
+                            # Create matching interface
+                            matching_html = '<div class="matching-pairs">'
+                            for i, pair in enumerate(pairs):
+                                left_text = escape_html(pair["left"])
+                                correct_right = escape_html(pair["right"])
+                                matching_html += f'''<div class="matching-pair">
+      <div class="matching-left">{left_text}</div>
+      <select class="matching-select" name="{name}__pair{i}" data-correct="{correct_right}">
+        <option value="">-- Select --</option>
+        {''.join([f'<option value="{escape_html(r)}">{escape_html(r)}</option>' for r in shuffled_rights])}
+      </select>
+    </div>'''
+                            matching_html += '</div>'
+                            question_html = f"""<div class="q q-matching" data-type="matching" data-question-id="{name}">
+  <div class="stem"><strong>Q{idx}.</strong> Match each item on the left with the correct item on the right.</div>
+  {matching_html}
+</div>"""
+                            q_html.append(question_html)
+                        elif q.type == "ordering":
+                            name = f"{asmt.id}__q{idx}"
+                            items = q.data.get("items", [])
+                            # Create ordering interface with number inputs
+                            ordering_html = '<div class="ordering-items">'
+                            for i, item in enumerate(items):
+                                item_text = escape_html(item)
+                                ordering_html += f'''<div class="ordering-item">
+      <label>Step <input type="number" class="ordering-input" name="{name}__item{i}" min="1" max="{len(items)}" data-correct="{i+1}" placeholder="{i+1}"></label>
+      <span class="ordering-text">{item_text}</span>
+    </div>'''
+                            ordering_html += '</div>'
+                            question_html = f"""<div class="q q-ordering" data-type="ordering" data-question-id="{name}">
+  <div class="stem"><strong>Q{idx}.</strong> Put the following items in the correct order (1, 2, 3, ...).</div>
+  {ordering_html}
+</div>"""
+                            q_html.append(question_html)
                         else:
                             q_html.append(f"""<div class="q" data-type="{q.type}">
-  <div>Unsupported question type in demo exporter.</div>
+  <div>Unsupported question type: {q.type}</div>
 </div>""")
                     
                     assessment_content = engine.render_with_defaults(

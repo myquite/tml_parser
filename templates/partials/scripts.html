@@ -49,12 +49,71 @@ function checkQuiz(courseId, assessId){
     }else if(type==='truefalse'){
       const chosen = q.querySelector('input[type=radio]:checked');
       if(chosen && chosen.value === q.dataset.answer) correct++;
+    }else if(type==='short' || type==='long'){
+      const answer = q.querySelector('.text-answer');
+      const solution = q.dataset.solution;
+      if(answer && solution){
+        const userAnswer = answer.value.trim().toLowerCase();
+        const correctAnswer = solution.trim().toLowerCase();
+        // Simple comparison - can be enhanced with fuzzy matching
+        if(userAnswer === correctAnswer){
+          correct++;
+        }
+        // Show solution
+        const solutionDiv = q.querySelector('.solution');
+        if(solutionDiv) solutionDiv.style.display = 'block';
+      }
+    }else if(type==='code'){
+      const answer = q.querySelector('.code-editor');
+      const solution = q.dataset.solution;
+      if(answer && solution){
+        const userCode = answer.value.trim();
+        const correctCode = solution.trim();
+        // Basic comparison - normalize whitespace
+        const normalizedUser = userCode.replace(/\s+/g, ' ').trim();
+        const normalizedSolution = correctCode.replace(/\s+/g, ' ').trim();
+        if(normalizedUser === normalizedSolution){
+          correct++;
+        }
+        // Show solution
+        const solutionDiv = q.querySelector('.solution');
+        if(solutionDiv) solutionDiv.style.display = 'block';
+      }
+    }else if(type==='matching'){
+      let allCorrect = true;
+      q.querySelectorAll('.matching-select').forEach(select=>{
+        const selected = select.value;
+        const correct = select.dataset.correct;
+        if(selected !== correct){
+          allCorrect = false;
+        }
+      });
+      if(allCorrect && q.querySelectorAll('.matching-select').length > 0){
+        correct++;
+      }
+    }else if(type==='ordering'){
+      let allCorrect = true;
+      q.querySelectorAll('.ordering-input').forEach(input=>{
+        const value = parseInt(input.value);
+        const correct = parseInt(input.dataset.correct);
+        if(value !== correct){
+          allCorrect = false;
+        }
+      });
+      if(allCorrect && q.querySelectorAll('.ordering-input').length > 0){
+        correct++;
+      }
     }
   });
   const score = Math.round((correct/Math.max(total,1))*100);
   saveScore(courseId, assessId, score);
   const out = assessEl.querySelector('.quiz-result');
   if(out){ out.textContent = `Score: ${score}% (${correct}/${Math.max(total,1)})`; }
+  
+  // Show all solutions for questions that have them
+  assessEl.querySelectorAll('.q[data-solution] .solution').forEach(sol=>{
+    sol.style.display = 'block';
+  });
 }
 document.addEventListener('DOMContentLoaded', ()=>{
   const cid = document.body.dataset.courseId;

@@ -183,6 +183,28 @@
           <solution>It specifies the character encoding for the document, ensuring that special characters and international text display correctly.</solution>
         </question>
         
+        <!-- Long Answer Question -->
+        <question id="q5" type="long" points="25">
+          <prompt>Explain the difference between semantic and non-semantic HTML elements. Provide examples of each.</prompt>
+          <solution>Semantic HTML elements clearly describe their meaning in a human- and machine-readable way. Examples include &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;section&gt;, &lt;article&gt;, and &lt;footer&gt;. Non-semantic elements like &lt;div&gt; and &lt;span&gt; tell us nothing about their content.</solution>
+        </question>
+        
+        <!-- Matching Question -->
+        <question id="q6" type="matching" points="15">
+          <pair><left>&lt;h1&gt;</left><right>Largest heading</right></pair>
+          <pair><left>&lt;p&gt;</left><right>Paragraph text</right></pair>
+          <pair><left>&lt;a&gt;</left><right>Hyperlink</right></pair>
+          <pair><left>&lt;img&gt;</left><right>Image element</right></pair>
+        </question>
+        
+        <!-- Ordering Question -->
+        <question id="q7" type="ordering" points="10">
+          <item>Create the HTML structure</item>
+          <item>Add CSS styling</item>
+          <item>Test in multiple browsers</item>
+          <item>Deploy to web server</item>
+        </question>
+        
       </assessment>
       
       <!-- Resources -->
