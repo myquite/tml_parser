@@ -1,0 +1,6 @@
+# Optional dependencies for TML Parser
+# Install with: pip install -r requirements.txt
+
+# XSD Schema Validation (optional but recommended)
+lxml>=4.9.0
+
