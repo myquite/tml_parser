@@ -4,38 +4,23 @@ This directory contains example TML course files demonstrating various features 
 
 ## 📚 Available Examples
 
-### `sample_course.tml`
-A focused introduction to JavaScript Variables. Perfect for beginners learning the TML format.
-
-**Features demonstrated:**
-- Basic course structure
-- Content sections with markdown
-- Interactive worked examples (reading activities with code)
-- Coding activities
-- Quiz assessments with multiple question types
-
-**Topics covered:**
-- Variable declarations (let, const, var)
-- Data types
-- Variable naming conventions
-- Best practices
-
 ### `example_course.tml`
-A comprehensive "Introduction to Web Development" course showcasing all TML features.
+A comprehensive "Python Programming Basics" course showcasing all TML features and question types.
 
 **Features demonstrated:**
 - Complete course structure with metadata
 - Prerequisites
 - Multiple modules and lessons
 - All activity types (coding, reading, reflection, project, lab)
-- All assessment question types (MCQ, MSQ, true/false, short answer, code)
+- **All 8 assessment question types** (MCQ, MSQ, true/false, short answer, long answer, code, matching, ordering)
 - Resources and badges
 - Grading schemes
 
 **Topics covered:**
-- HTML fundamentals
-- CSS styling
-- JavaScript basics
+- Python basics and syntax
+- Variables and data types
+- Control flow (if/else, loops)
+- Functions
 
 ## 🚀 Using Examples
 
@@ -43,9 +28,6 @@ A comprehensive "Introduction to Web Development" course showcasing all TML feat
 
 ```bash
 # From project root
-python3 tml_to_site.py examples/sample_course.tml site/
-
-# Or with the comprehensive example
 python3 tml_to_site.py examples/example_course.tml site/
 ```
 
@@ -53,7 +35,7 @@ python3 tml_to_site.py examples/example_course.tml site/
 
 1. Copy an example file:
    ```bash
-   cp examples/sample_course.tml my_course.tml
+   cp examples/example_course.tml my_course.tml
    ```
 
 2. Edit the content to match your course
@@ -70,6 +52,7 @@ python3 tml_to_site.py examples/example_course.tml site/
 - See how different elements are used
 - Learn best practices for content formatting
 - Understand activity and assessment patterns
+- See examples of all 8 question types in action
 
 ### For Developers:
 - See how TML is parsed and rendered
@@ -79,24 +62,27 @@ python3 tml_to_site.py examples/example_course.tml site/
 ## 🔍 Example Highlights
 
 ### Interactive Worked Examples
-The examples show how to create interactive code examples:
+The example shows how to create interactive code examples:
 ```xml
 <activity id="example-1" type="reading" est="PT15M">
   <expected format="markdown">
-    ```javascript
-    let age = 25;
+    ```python
+    print("Hello, World!")
     ```
   </expected>
 </activity>
 ```
 
-### Multiple Question Types
-See how different question types are structured:
+### All Question Types
+See how all 8 question types are structured:
 - Multiple choice (MCQ)
 - Multiple select (MSQ)
 - True/False
 - Short answer
+- Long answer
 - Code questions
+- Matching questions
+- Ordering questions
 
 ### Activity Variety
 Examples of all activity types:
@@ -108,9 +94,9 @@ Examples of all activity types:
 
 ## 💡 Tips
 
-1. **Start simple**: Begin with `sample_course.tml` to understand basics
-2. **Explore features**: Use `example_course.tml` to see advanced features
-3. **Modify and test**: Copy examples and experiment
+1. **Start with the example**: Use `example_course.tml` to see all features
+2. **Explore all question types**: The example includes all 8 question types
+3. **Modify and test**: Copy the example and experiment
 4. **Validate**: Always validate your TML files before generating
 
 ## 📚 Related Documentation

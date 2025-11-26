@@ -1,465 +1,567 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Example TML Course: "Introduction to Web Development"
+  Example TML Course: "Python Programming Basics"
   
-  This file demonstrates the TML v0.1 schema structure with:
+  This comprehensive example demonstrates all TML v0.1 features:
   - Course metadata and objectives
   - Prerequisites
   - Modules and lessons
-  - Multiple content formats (markdown, html, text)
-  - Various activity types (coding, reading, reflection, project, lab)
-  - Different assessment types (quiz, coding)
+  - Multiple content formats (markdown)
+  - All activity types (coding, reading, reflection, project, lab)
+  - All assessment question types (mcq, msq, truefalse, short, long, code, matching, ordering)
   - Resources and badges
   - Grading scheme
   
   Duration format: ISO 8601 (e.g., P6W = 6 weeks, PT45M = 45 minutes)
   Level: beginner | intermediate | advanced | mixed
 -->
-<course id="web-dev-intro" 
-        title="Introduction to Web Development" 
+<course id="python-basics" 
+        title="Python Programming Basics" 
         level="beginner" 
-        duration="P8W" 
+        duration="P6W" 
         version="1.0" 
         lang="en">
   
   <!-- Course Metadata -->
   <meta>
-    <description>Learn the fundamentals of web development including HTML, CSS, and JavaScript. Perfect for beginners with no prior programming experience.</description>
-    <author>Jane Smith</author>
-    <author>John Doe</author>
-    <tag>web-development</tag>
-    <tag>html</tag>
-    <tag>css</tag>
-    <tag>javascript</tag>
+    <description>Learn Python programming from scratch. This course covers variables, data types, control flow, functions, and more. Perfect for absolute beginners.</description>
+    <author>Python Education Team</author>
+    <tag>python</tag>
+    <tag>programming</tag>
     <tag>beginner-friendly</tag>
+    <tag>coding</tag>
   </meta>
   
-  <!-- Prerequisites (references to other courses) -->
-  <prereq ref="computer-basics">Basic computer skills</prereq>
+  <!-- Prerequisites -->
+  <prereq ref="computer-basics">Basic computer skills and familiarity with using a text editor</prereq>
   
   <!-- Course Objectives -->
-  <objective level="beginner">Understand the structure of HTML documents</objective>
-  <objective level="beginner">Style web pages using CSS</objective>
-  <objective level="intermediate">Add interactivity with JavaScript</objective>
-  <objective level="beginner">Build a complete web page from scratch</objective>
+  <objective level="beginner">Understand Python syntax and basic programming concepts</objective>
+  <objective level="beginner">Write Python programs using variables, data types, and operators</objective>
+  <objective level="intermediate">Use control flow statements (if/else, loops) effectively</objective>
+  <objective level="beginner">Create and use functions in Python</objective>
+  <objective level="beginner">Work with lists, dictionaries, and other data structures</objective>
   
-  <!-- Module 1: HTML Fundamentals -->
-  <module id="html-basics" title="HTML Fundamentals" order="1" duration="P2W">
+  <!-- Module 1: Python Fundamentals -->
+  <module id="python-fundamentals" title="Python Fundamentals" order="1" duration="P2W">
     
-    <objective>Create well-structured HTML documents</objective>
-    <objective>Use semantic HTML elements</objective>
+    <objective>Master Python basics: variables, data types, and basic operations</objective>
     
-    <!-- Lesson 1: HTML Structure -->
-    <lesson id="html-structure" title="HTML Document Structure" order="1" duration="PT30M">
+    <!-- Lesson 1: Getting Started with Python -->
+    <lesson id="python-intro" title="Getting Started with Python" order="1" duration="PT30M">
       
-      <!-- Content Slide 1: Introduction -->
+      <!-- Content Slide 1: What is Python? -->
       <content format="markdown">
-        ## What is HTML?
+        ## What is Python?
         
-        HTML (HyperText Markup Language) is the standard markup language for creating web pages.
+        Python is a high-level, interpreted programming language known for its simplicity and readability.
         
-        ### Key Concepts:
-        - HTML describes the **structure** of a web page
-        - HTML elements are represented by **tags**
-        - Tags usually come in pairs: opening and closing
+        ### Why Python?
+        - **Easy to learn**: Clean, readable syntax
+        - **Versatile**: Used in web development, data science, AI, automation, and more
+        - **Powerful**: Large standard library and active community
+        - **Popular**: One of the most widely used programming languages
         
-        ### Basic Structure:
-        ```html
-        &lt;!DOCTYPE html&gt;
-        &lt;html&gt;
-          &lt;head&gt;
-            &lt;title&gt;My Page&lt;/title&gt;
-          &lt;/head&gt;
-          &lt;body&gt;
-            &lt;h1&gt;Hello World!&lt;/h1&gt;
-          &lt;/body&gt;
-        &lt;/html&gt;
+        ### Your First Python Program
+        
+        ```python
+        print("Hello, World!")
         ```
+        
+        This simple program outputs text to the console. The `print()` function is one of the most basic and useful functions in Python.
       </content>
       
-      <!-- Content Slide 2: Common Elements -->
+      <!-- Content Slide 2: Python Syntax -->
       <content format="markdown">
-        ## Common HTML Elements
+        ## Python Syntax Basics
         
-        Here are some essential HTML elements you'll use frequently:
+        Python uses indentation to define code blocks, making it very readable:
         
-        - **Headings**: `&lt;h1&gt;` through `&lt;h6&gt;`
-        - **Paragraphs**: `&lt;p&gt;`
-        - **Links**: `&lt;a href="..."&gt;`
-        - **Images**: `&lt;img src="..." alt="..."&gt;`
-        - **Lists**: `&lt;ul&gt;`, `&lt;ol&gt;`, `&lt;li&gt;`
-        - **Divisions**: `&lt;div&gt;` and semantic elements like `&lt;header&gt;`, `&lt;nav&gt;`, `&lt;main&gt;`
+        ```python
+        if True:
+            print("This is indented")
+            print("So is this")
+        print("This is not part of the if block")
+        ```
+        
+        **Key Points:**
+        - Python is case-sensitive
+        - Use 4 spaces (or 1 tab) for indentation
+        - Comments start with `#`
+        - No semicolons needed at the end of lines
       </content>
       
       <!-- Reading Activity: Worked Example -->
-      <activity id="html-example-1" type="reading" est="PT10M">
-        <instructions>Review this example HTML document and understand its structure.</instructions>
+      <activity id="python-example-1" type="reading" est="PT10M">
+        <instructions>Study this example Python program and experiment with the code.</instructions>
         <expected format="markdown">
-          ## Example: Personal Portfolio Page
+          ## Example: Simple Calculator
           
-          Here's a complete HTML document for a personal portfolio:
+          Here's a complete Python program that performs basic arithmetic:
           
-          ```html
-          &lt;!DOCTYPE html&gt;
-          &lt;html lang="en"&gt;
-          &lt;head&gt;
-            &lt;meta charset="UTF-8"&gt;
-            &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-            &lt;title&gt;Jane Doe - Web Developer&lt;/title&gt;
-          &lt;/head&gt;
-          &lt;body&gt;
-            &lt;header&gt;
-              &lt;h1&gt;Jane Doe&lt;/h1&gt;
-              &lt;nav&gt;
-                &lt;a href="#about"&gt;About&lt;/a&gt;
-                &lt;a href="#projects"&gt;Projects&lt;/a&gt;
-                &lt;a href="#contact"&gt;Contact&lt;/a&gt;
-              &lt;/nav&gt;
-            &lt;/header&gt;
-            &lt;main&gt;
-              &lt;section id="about"&gt;
-                &lt;h2&gt;About Me&lt;/h2&gt;
-                &lt;p&gt;I'm a passionate web developer...&lt;/p&gt;
-              &lt;/section&gt;
-            &lt;/main&gt;
-            &lt;footer&gt;
-              &lt;p&gt;&amp;copy; 2024 Jane Doe&lt;/p&gt;
-            &lt;/footer&gt;
-          &lt;/body&gt;
-          &lt;/html&gt;
+          ```python
+          # Get input from user
+          num1 = float(input("Enter first number: "))
+          num2 = float(input("Enter second number: "))
+          
+          # Perform operations
+          sum_result = num1 + num2
+          product = num1 * num2
+          
+          # Display results
+          print(f"Sum: {sum_result}")
+          print(f"Product: {product}")
           ```
           
           **Key Takeaways:**
-          - Notice the semantic HTML5 elements (`&lt;header&gt;`, `&lt;nav&gt;`, `&lt;main&gt;`, `&lt;section&gt;`, `&lt;footer&gt;`)
-          - All content is properly nested
-          - The document has a clear structure
+          - `input()` gets text from the user
+          - `float()` converts text to a decimal number
+          - `f"..."` is an f-string for formatting output
+          - Variables store values for later use
         </expected>
       </activity>
       
       <!-- Coding Activity -->
-      <activity id="html-practice-1" type="coding" est="PT15M">
-        <instructions>Create an HTML document with the following structure:
+      <activity id="python-practice-1" type="coding" est="PT15M">
+        <instructions>Write a Python program that:
         
-        1. A header with your name as an h1
-        2. A navigation section with links to "Home", "About", and "Contact"
-        3. A main section with an h2 heading "Welcome" and a paragraph introducing yourself
-        4. A footer with copyright information
+        1. Asks the user for their name
+        2. Asks for their age
+        3. Calculates the year they were born (assume current year is 2024)
+        4. Prints a greeting message with their name and birth year
         
-        Use semantic HTML5 elements where appropriate.</instructions>
-        <expected>Your HTML should include proper DOCTYPE, html, head, and body tags. Use semantic elements like &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, and &lt;footer&gt;.</expected>
+        Use the `input()` function to get user input and `print()` to display output.</instructions>
+        <expected>Your program should use `input()` to get the name and age, convert age to a number, calculate birth year (2024 - age), and print a formatted message.</expected>
       </activity>
       
-      <!-- Assessment: Quiz -->
-      <assessment id="html-quiz-1" type="quiz" passScore="70" attempts="3">
+      <!-- Assessment: Quiz with All Question Types -->
+      <assessment id="python-quiz-1" type="quiz" passScore="70" attempts="3">
         
         <!-- Multiple Choice Question -->
         <question id="q1" type="mcq" points="10">
-          <stem>What does HTML stand for?</stem>
-          <choice correct="true">HyperText Markup Language</choice>
-          <choice>High-Level Text Markup Language</choice>
-          <choice>Hyperlink and Text Markup Language</choice>
-          <choice>Home Tool Markup Language</choice>
+          <stem>What is Python primarily known for?</stem>
+          <choice correct="true">Readability and simplicity</choice>
+          <choice>Speed of execution</choice>
+          <choice>Low memory usage</choice>
+          <choice>Hardware-level programming</choice>
         </question>
         
         <!-- Multiple Select Question -->
         <question id="q2" type="msq" points="15">
-          <stem>Which of the following are semantic HTML5 elements? (Select all that apply)</stem>
-          <choice correct="true">&lt;header&gt;</choice>
-          <choice correct="true">&lt;nav&gt;</choice>
-          <choice>&lt;div&gt;</choice>
-          <choice correct="true">&lt;footer&gt;</choice>
-          <choice>&lt;span&gt;</choice>
+          <stem>Which of the following are valid Python data types? (Select all that apply)</stem>
+          <choice correct="true">int</choice>
+          <choice correct="true">str</choice>
+          <choice correct="true">float</choice>
+          <choice>char</choice>
+          <choice correct="true">bool</choice>
         </question>
         
         <!-- True/False Question -->
         <question id="q3" type="truefalse" points="10">
-          <statement>All HTML tags must have a closing tag.</statement>
+          <statement>Python requires semicolons at the end of each statement.</statement>
           <answer value="false"/>
         </question>
         
         <!-- Short Answer Question -->
-        <question id="q4" type="short" points="20">
-          <prompt>What is the purpose of the &lt;meta charset="UTF-8"&gt; tag in the HTML head?</prompt>
-          <solution>It specifies the character encoding for the document, ensuring that special characters and international text display correctly.</solution>
+        <question id="q4" type="short" points="15">
+          <prompt>What function is used to get input from the user in Python?</prompt>
+          <solution>input()</solution>
         </question>
         
         <!-- Long Answer Question -->
-        <question id="q5" type="long" points="25">
-          <prompt>Explain the difference between semantic and non-semantic HTML elements. Provide examples of each.</prompt>
-          <solution>Semantic HTML elements clearly describe their meaning in a human- and machine-readable way. Examples include &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;section&gt;, &lt;article&gt;, and &lt;footer&gt;. Non-semantic elements like &lt;div&gt; and &lt;span&gt; tell us nothing about their content.</solution>
+        <question id="q5" type="long" points="20">
+          <prompt>Explain the difference between `print()` and `input()` functions in Python. When would you use each?</prompt>
+          <solution>The `print()` function outputs text to the console/terminal, while `input()` gets text input from the user. Use `print()` to display information, messages, or results. Use `input()` when you need to get data from the user, such as their name, age, or other information that the program needs to process.</solution>
+        </question>
+        
+        <!-- Code Question -->
+        <question id="q6" type="code" points="25">
+          <prompt>Write a Python program that prints "Hello, Python!" to the console.</prompt>
+          <lang>python</lang>
+          <starter># Your code here</starter>
+          <solution>print("Hello, Python!")</solution>
         </question>
         
         <!-- Matching Question -->
-        <question id="q6" type="matching" points="15">
-          <pair><left>&lt;h1&gt;</left><right>Largest heading</right></pair>
-          <pair><left>&lt;p&gt;</left><right>Paragraph text</right></pair>
-          <pair><left>&lt;a&gt;</left><right>Hyperlink</right></pair>
-          <pair><left>&lt;img&gt;</left><right>Image element</right></pair>
+        <question id="q7" type="matching" points="15">
+          <pair><left>print()</left><right>Outputs text to console</right></pair>
+          <pair><left>input()</left><right>Gets text from user</right></pair>
+          <pair><left>int()</left><right>Converts to integer</right></pair>
+          <pair><left>float()</left><right>Converts to decimal number</right></pair>
         </question>
         
         <!-- Ordering Question -->
-        <question id="q7" type="ordering" points="10">
-          <item>Create the HTML structure</item>
-          <item>Add CSS styling</item>
-          <item>Test in multiple browsers</item>
-          <item>Deploy to web server</item>
+        <question id="q8" type="ordering" points="10">
+          <item>Write the code</item>
+          <item>Save the file with .py extension</item>
+          <item>Run the program</item>
+          <item>Check the output</item>
         </question>
         
       </assessment>
       
       <!-- Resources -->
-      <resource id="html-spec" type="link" href="https://html.spec.whatwg.org/" lang="en">
-        <title>HTML Living Standard</title>
+      <resource id="python-docs" type="link" href="https://docs.python.org/3/" lang="en">
+        <title>Python Official Documentation</title>
       </resource>
       
-      <resource id="mdn-html" type="link" href="https://developer.mozilla.org/en-US/docs/Web/HTML" lang="en">
-        <title>MDN HTML Documentation</title>
+      <resource id="python-tutorial" type="link" href="https://www.python.org/about/gettingstarted/" lang="en">
+        <title>Python Getting Started Guide</title>
       </resource>
       
     </lesson>
     
-    <!-- Lesson 2: Forms and Input -->
-    <lesson id="html-forms" title="HTML Forms and Input Elements" order="2" duration="PT45M">
+    <!-- Lesson 2: Variables and Data Types -->
+    <lesson id="python-variables" title="Variables and Data Types" order="2" duration="PT45M">
       
       <content format="markdown">
-        ## HTML Forms
+        ## Variables in Python
         
-        Forms allow users to input and submit data. The `&lt;form&gt;` element contains form controls.
+        Variables are containers that store data. In Python, you don't need to declare variable types - Python figures it out automatically!
         
-        ### Common Input Types:
-        - `text` - Single-line text input
-        - `email` - Email address
-        - `password` - Password field (masked)
-        - `checkbox` - Checkbox
-        - `radio` - Radio button
-        - `submit` - Submit button
+        ```python
+        name = "Alice"
+        age = 25
+        height = 5.6
+        is_student = True
+        ```
+        
+        ### Variable Naming Rules:
+        - Must start with a letter or underscore
+        - Can contain letters, numbers, and underscores
+        - Case-sensitive (`name` and `Name` are different)
+        - Cannot use Python keywords (like `if`, `for`, `def`)
       </content>
       
+      <content format="markdown">
+        ## Data Types
+        
+        Python has several built-in data types:
+        
+        - **int**: Whole numbers (`42`, `-10`)
+        - **float**: Decimal numbers (`3.14`, `-0.5`)
+        - **str**: Text strings (`"Hello"`, `'World'`)
+        - **bool**: Boolean values (`True`, `False`)
+        - **list**: Ordered collections (`[1, 2, 3]`)
+        - **dict**: Key-value pairs (`{"name": "Alice"}`)
+        
+        You can check a variable's type using `type()`:
+        
+        ```python
+        x = 42
+        print(type(x))  # Output: &lt;class 'int'&gt;
+        ```
+      </content>
+      
+      <!-- Reading Activity: Worked Example -->
+      <activity id="variables-example" type="reading" est="PT15M">
+        <instructions>Study this example and experiment with different variable types.</instructions>
+        <expected format="markdown">
+          ## Example: Working with Variables
+          
+          ```python
+          # Different data types
+          name = "Python"
+          version = 3
+          decimal_version = 3.11
+          is_latest = True
+          
+          # Type checking
+          print(type(name))           # &lt;class 'str'&gt;
+          print(type(version))        # &lt;class 'int'&gt;
+          print(type(decimal_version)) # &lt;class 'float'&gt;
+          print(type(is_latest))      # &lt;class 'bool'&gt;
+          
+          # Type conversion
+          age_str = "25"
+          age_int = int(age_str)      # Convert string to integer
+          print(age_int + 5)          # Output: 30
+          ```
+          
+          **Key Takeaways:**
+          - Python automatically determines variable types
+          - Use `type()` to check a variable's type
+          - Convert between types using `int()`, `float()`, `str()`, etc.
+        </expected>
+      </activity>
+      
       <!-- Reflection Activity -->
-      <activity id="form-reflection" type="reflection" est="PT10M">
-        <instructions>Think about a website you use regularly. What forms does it have? What information does it collect? Write a brief reflection on the user experience of filling out those forms.</instructions>
+      <activity id="variables-reflection" type="reflection" est="PT10M">
+        <instructions>Think about when you might need to convert between data types in a real program. For example, when getting user input (which is always a string) and needing to do math with it. Write a brief reflection on the importance of understanding data types.</instructions>
       </activity>
       
       <!-- Lab Activity -->
-      <activity id="form-lab" type="lab" est="PT20M">
-        <instructions>Create a contact form with the following fields:
+      <activity id="variables-lab" type="lab" est="PT20M">
+        <instructions>Create a Python program that:
         
-        1. Name (text input, required)
-        2. Email (email input, required)
-        3. Subject (text input)
-        4. Message (textarea, required)
-        5. Subscribe to newsletter (checkbox)
-        6. Submit button
+        1. Creates variables for a person's information (name, age, city, salary)
+        2. Uses appropriate data types for each
+        3. Prints a formatted message using f-strings
+        4. Converts the salary to a different currency (multiply by exchange rate)
         
-        Use appropriate input types and add the `required` attribute where needed.</instructions>
-        <expected>Your form should include proper labels, use semantic HTML, and have appropriate input types for each field.</expected>
+        Experiment with type conversions and see what happens when you mix types.</instructions>
+        <expected>Your program should demonstrate understanding of different data types, type conversion, and string formatting with f-strings.</expected>
       </activity>
       
     </lesson>
     
   </module>
   
-  <!-- Module 2: CSS Styling -->
-  <module id="css-basics" title="CSS Fundamentals" order="2" duration="P2W">
+  <!-- Module 2: Control Flow -->
+  <module id="control-flow" title="Control Flow" order="2" duration="P2W">
     
-    <prereq ref="html-basics">HTML Fundamentals</prereq>
+    <prereq ref="python-fundamentals">Python Fundamentals</prereq>
     
-    <objective>Style HTML elements using CSS</objective>
-    <objective>Understand CSS selectors and specificity</objective>
-    <objective>Create responsive layouts</objective>
+    <objective>Master conditional statements and loops</objective>
+    <objective>Write programs that make decisions and repeat actions</objective>
     
-    <!-- Lesson 1: CSS Introduction -->
-    <lesson id="css-intro" title="Introduction to CSS" order="1" duration="PT40M">
+    <!-- Lesson 1: Conditional Statements -->
+    <lesson id="conditionals" title="If/Else Statements" order="1" duration="PT40M">
       
       <content format="markdown">
-        ## What is CSS?
+        ## Conditional Statements
         
-        CSS (Cascading Style Sheets) is used to style and layout web pages.
+        Use `if`, `elif`, and `else` to make decisions in your code:
         
-        ### Three Ways to Add CSS:
+        ```python
+        age = 18
         
-        1. **Inline styles**: `&lt;div style="color: red;"&gt;`
-        2. **Internal stylesheet**: `&lt;style&gt;` tag in the `&lt;head&gt;`
-        3. **External stylesheet**: Link to a `.css` file
-        
-        ### Basic Syntax:
-        ```css
-        selector {
-          property: value;
-        }
+        if age >= 18:
+            print("You are an adult")
+        elif age >= 13:
+            print("You are a teenager")
+        else:
+            print("You are a child")
         ```
+        
+        ### Comparison Operators:
+        - `==` : Equal to
+        - `!=` : Not equal to
+        - `&lt;` : Less than
+        - `&gt;` : Greater than
+        - `&lt;=` : Less than or equal to
+        - `&gt;=` : Greater than or equal to
       </content>
       
-      <!-- Project Activity -->
-      <activity id="css-project-1" type="project" est="PT2H">
-        <instructions>Create a personal portfolio website with:
+      <!-- Coding Activity -->
+      <activity id="conditionals-practice" type="coding" est="PT20M">
+        <instructions>Write a Python program that:
         
-        - A header with navigation
-        - A hero section with your name and a tagline
-        - A projects section showcasing 3 projects
-        - A contact section with a form
-        - Responsive design that works on mobile and desktop
+        1. Asks the user for a number
+        2. Checks if the number is positive, negative, or zero
+        3. Checks if the number is even or odd
+        4. Prints appropriate messages for each condition
         
-        Use external CSS for all styling. Focus on:
-        - Typography (fonts, sizes, spacing)
-        - Colors and backgrounds
-        - Layout using flexbox or grid
-        - Hover effects and transitions</instructions>
-        <expected>Your portfolio should demonstrate understanding of CSS selectors, the box model, and layout techniques. Code should be well-organized and commented.</expected>
-        <rubric scale="points">
-          <criterion id="c1" points="25">HTML structure is semantic and well-organized</criterion>
-          <criterion id="c2" points="30">CSS styling is consistent and visually appealing</criterion>
-          <criterion id="c3" points="25">Layout is responsive and works on different screen sizes</criterion>
-          <criterion id="c4" points="20">Code is clean, commented, and follows best practices</criterion>
-        </rubric>
+        Use if/elif/else statements and the modulo operator (`%`) to check for even/odd.</instructions>
+        <expected>Your program should use nested conditionals to check both the sign and parity of the number, demonstrating understanding of if/elif/else statements.</expected>
       </activity>
       
-      <!-- Assessment: Coding Challenge -->
-      <assessment id="css-assessment" type="coding" passScore="80" attempts="2">
+      <!-- Assessment -->
+      <assessment id="conditionals-quiz" type="quiz" passScore="75">
         
-        <question id="css-q1" type="code" points="50">
-          <prompt>Write CSS to style a navigation bar with the following requirements:
-          
-          - Background color: #333
-          - Text color: white
-          - Links should be displayed horizontally
-          - Links should have padding of 15px
-          - On hover, links should have a background color of #555
-          - The navigation should be fixed at the top of the page</prompt>
-          <lang>css</lang>
-          <starter>/* Your CSS here */
-nav {
-  
-}</starter>
-          <solution>nav {
-  background-color: #333;
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-
-nav a {
-  color: white;
-  display: inline-block;
-  padding: 15px;
-  text-decoration: none;
-}
-
-nav a:hover {
-  background-color: #555;
-}</solution>
+        <question id="cq1" type="mcq" points="15">
+          <stem>What is the output of: `print("Yes" if 5 &gt; 3 else "No")`</stem>
+          <choice correct="true">Yes</choice>
+          <choice>No</choice>
+          <choice>Error</choice>
+          <choice>None</choice>
+        </question>
+        
+        <question id="cq2" type="code" points="25">
+          <prompt>Write an if statement that checks if a variable `score` is greater than or equal to 90 and prints "A grade" if true.</prompt>
+          <lang>python</lang>
+          <starter>score = 95
+# Your code here</starter>
+          <solution>score = 95
+if score &gt;= 90:
+    print("A grade")</solution>
         </question>
         
       </assessment>
       
     </lesson>
     
-  </module>
-  
-  <!-- Module 3: JavaScript Basics -->
-  <module id="js-basics" title="JavaScript Fundamentals" order="3" duration="P3W">
-    
-    <prereq ref="html-basics">HTML Fundamentals</prereq>
-    <prereq ref="css-basics">CSS Fundamentals</prereq>
-    
-    <objective>Write basic JavaScript programs</objective>
-    <objective>Manipulate the DOM</objective>
-    <objective>Handle user events</objective>
-    
-    <!-- Lesson 1: JavaScript Variables -->
-    <lesson id="js-variables" title="Variables and Data Types" order="1" duration="PT45M">
+    <!-- Lesson 2: Loops -->
+    <lesson id="loops" title="Loops" order="2" duration="PT45M">
       
       <content format="markdown">
-        ## JavaScript Variables
+        ## Loops in Python
         
-        Variables store data values. JavaScript has three ways to declare variables:
+        Loops let you repeat code multiple times:
         
-        - `let` - Block-scoped, can be reassigned
-        - `const` - Block-scoped, cannot be reassigned
-        - `var` - Function-scoped (avoid in modern code)
+        ### For Loops
+        ```python
+        for i in range(5):
+            print(f"Number: {i}")
+        ```
+        
+        ### While Loops
+        ```python
+        count = 0
+        while count &lt; 5:
+            print(count)
+            count += 1
+        ```
+      </content>
+      
+      <!-- Project Activity -->
+      <activity id="loops-project" type="project" est="PT1H">
+        <instructions>Create a number guessing game:
+        
+        1. Generate a random number between 1 and 100
+        2. Ask the user to guess the number
+        3. Give hints (too high/too low)
+        4. Count the number of guesses
+        5. Congratulate when they guess correctly
+        
+        Use a while loop to keep asking until they guess correctly. Use `import random` and `random.randint(1, 100)` to generate the random number.</instructions>
+        <expected>Your game should use a while loop, handle user input, provide feedback, and track the number of attempts. Code should be well-organized and include comments.</expected>
+        <rubric scale="points">
+          <criterion id="r1" points="30">Game logic works correctly</criterion>
+          <criterion id="r2" points="25">Uses while loop appropriately</criterion>
+          <criterion id="r3" points="20">Provides helpful feedback</criterion>
+          <criterion id="r4" points="25">Code is clean and commented</criterion>
+        </rubric>
+      </activity>
+      
+    </lesson>
+    
+  </module>
+  
+  <!-- Module 3: Functions -->
+  <module id="functions" title="Functions" order="3" duration="P2W">
+    
+    <prereq ref="control-flow">Control Flow</prereq>
+    
+    <objective>Create reusable functions</objective>
+    <objective>Understand function parameters and return values</objective>
+    
+    <!-- Lesson 1: Defining Functions -->
+    <lesson id="function-basics" title="Function Basics" order="1" duration="PT40M">
+      
+      <content format="markdown">
+        ## Functions in Python
+        
+        Functions let you organize code into reusable blocks:
+        
+        ```python
+        def greet(name):
+            return f"Hello, {name}!"
+        
+        message = greet("Alice")
+        print(message)  # Output: Hello, Alice!
+        ```
+        
+        ### Function Components:
+        - `def`: Keyword to define a function
+        - Function name: `greet`
+        - Parameters: `name` (input)
+        - Return value: What the function gives back
       </content>
       
       <!-- Reading Activity: Worked Example -->
-      <activity id="js-example-1" type="reading" est="PT15M">
-        <instructions>Study this example and experiment with the code.</instructions>
+      <activity id="functions-example" type="reading" est="PT15M">
+        <instructions>Study this example function and understand how parameters and return values work.</instructions>
         <expected format="markdown">
-          ## Example: Variable Declarations
+          ## Example: Calculator Functions
           
-          ```javascript
-          // Using let
-          let age = 25;
-          age = 26; // ✅ Can reassign
+          ```python
+          def add(a, b):
+              """Adds two numbers and returns the result."""
+              return a + b
           
-          // Using const
-          const name = "Alice";
-          // name = "Bob"; // ❌ Error! Cannot reassign const
+          def multiply(a, b):
+              """Multiplies two numbers and returns the result."""
+              return a * b
           
-          // const with objects
-          const person = { name: "Alice", age: 25 };
-          person.age = 26; // ✅ Can modify object properties
-          // person = {}; // ❌ Cannot reassign the variable
+          # Using the functions
+          result1 = add(5, 3)        # Returns 8
+          result2 = multiply(4, 7)   # Returns 28
           
-          // Multiple declarations
-          let x = 10, y = 20, z = 30;
+          print(f"Sum: {result1}")
+          print(f"Product: {result2}")
           ```
           
           **Key Takeaways:**
-          - Use `const` by default
-          - Use `let` when you need to reassign
-          - Avoid `var` in modern JavaScript
+          - Functions can take multiple parameters
+          - Use `return` to send a value back
+          - Functions can be called multiple times with different inputs
+          - Docstrings (triple quotes) document what functions do
         </expected>
       </activity>
       
       <!-- Coding Activity -->
-      <activity id="js-practice-1" type="coding" est="PT20M">
-        <instructions>Write JavaScript code to:
+      <activity id="functions-practice" type="coding" est="PT25M">
+        <instructions>Create a Python program with functions:
         
-        1. Declare a constant `PI` with value 3.14159
-        2. Declare a variable `radius` with value 5
-        3. Calculate the area of a circle using the formula: area = PI * radius²
-        4. Store the result in a variable called `area`
-        5. Log the result to the console
+        1. Write a function `calculate_area(length, width)` that returns the area of a rectangle
+        2. Write a function `calculate_perimeter(length, width)` that returns the perimeter
+        3. Write a function `describe_rectangle(length, width)` that prints a description using the other functions
+        4. Test your functions with different values
         
-        Use appropriate variable declarations (const/let).</instructions>
-        <expected>Your code should use `const` for PI and `let` for variables that might change. The calculation should be correct and use console.log() to display the result.</expected>
+        Make sure each function has a docstring explaining what it does.</instructions>
+        <expected>Your program should demonstrate function definition, parameters, return values, and function calls. All functions should have docstrings.</expected>
       </activity>
+      
+      <!-- Assessment -->
+      <assessment id="functions-quiz" type="quiz" passScore="80">
+        
+        <question id="fq1" type="mcq" points="20">
+          <stem>What keyword is used to define a function in Python?</stem>
+          <choice correct="true">def</choice>
+          <choice>function</choice>
+          <choice>define</choice>
+          <choice>func</choice>
+        </question>
+        
+        <question id="fq2" type="code" points="30">
+          <prompt>Write a function called `square` that takes one parameter `x` and returns `x` squared.</prompt>
+          <lang>python</lang>
+          <starter># Your function here</starter>
+          <solution>def square(x):
+    return x * x</solution>
+        </question>
+        
+        <question id="fq3" type="matching" points="20">
+          <pair><left>def</left><right>Defines a function</right></pair>
+          <pair><left>return</left><right>Sends value back from function</right></pair>
+          <pair><left>parameter</left><right>Function input</right></pair>
+          <pair><left>docstring</left><right>Function documentation</right></pair>
+        </question>
+        
+      </assessment>
       
     </lesson>
     
   </module>
   
   <!-- Course Resources -->
-  <resource id="w3schools" type="link" href="https://www.w3schools.com/" lang="en">
-    <title>W3Schools - Web Development Tutorials</title>
+  <resource id="python-org" type="link" href="https://www.python.org/" lang="en">
+    <title>Python.org - Official Python Website</title>
   </resource>
   
-  <resource id="css-tricks" type="link" href="https://css-tricks.com/" lang="en">
-    <title>CSS-Tricks - CSS and Web Design Resources</title>
-  </resource>
-  
-  <resource id="js-info" type="link" href="https://javascript.info/" lang="en">
-    <title>JavaScript.info - Modern JavaScript Tutorial</title>
+  <resource id="real-python" type="link" href="https://realpython.com/" lang="en">
+    <title>Real Python - Python Tutorials</title>
   </resource>
   
   <!-- Badges -->
-  <badge id="html-master" name="HTML Master" trigger="completeModule" threshold="80">
-    <desc>Earned by completing the HTML Fundamentals module with at least 80% score</desc>
+  <badge id="python-basics" name="Python Basics" trigger="completeModule" threshold="80">
+    <desc>Earned by completing the Python Fundamentals module with at least 80% score</desc>
   </badge>
   
-  <badge id="css-artist" name="CSS Artist" trigger="completeModule" threshold="85">
-    <desc>Earned by completing the CSS Fundamentals module with at least 85% score</desc>
+  <badge id="control-master" name="Control Flow Master" trigger="completeModule" threshold="85">
+    <desc>Earned by completing the Control Flow module with at least 85% score</desc>
   </badge>
   
-  <badge id="js-ninja" name="JavaScript Ninja" trigger="scoreAtLeast" threshold="90">
-    <desc>Earned by scoring at least 90% on the JavaScript assessment</desc>
+  <badge id="function-expert" name="Function Expert" trigger="scoreAtLeast" threshold="90">
+    <desc>Earned by scoring at least 90% on the Functions assessment</desc>
   </badge>
   
   <!-- Grading Scheme -->
   <grading scheme="weighted" passing="70">
-    <weight type="module" ref="html-basics" percent="30"/>
-    <weight type="module" ref="css-basics" percent="35"/>
-    <weight type="module" ref="js-basics" percent="35"/>
+    <weight type="module" ref="python-fundamentals" percent="35"/>
+    <weight type="module" ref="control-flow" percent="35"/>
+    <weight type="module" ref="functions" percent="30"/>
   </grading>
   
 </course>
-
