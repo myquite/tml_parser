@@ -98,7 +98,7 @@ tml_parser_demo/
 
 ## 🎓 What is TML?
 
-TML (Teaching Markup Language) is an XML-based format for defining educational courses. It supports:
+TML (Training Markup Language) is an XML-based format for defining educational courses. It supports:
 
 - **Modules and Lessons** - Hierarchical course structure
 - **Content Sections** - Markdown, HTML, or plain text

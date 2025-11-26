@@ -1,6 +1,6 @@
 # TML Schema Example Documentation
 
-This document explains the TML (Teaching Markup Language) v0.1 schema structure using the concrete example in `example_course.tml`.
+This document explains the TML (Training Markup Language) v0.1 schema structure using the concrete example in `example_course.tml`.
 
 ## Overview
 
